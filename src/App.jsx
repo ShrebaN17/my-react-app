@@ -452,6 +452,24 @@ function BackToTop() {
   );
 }
 
+function MadeInBadge() {
+  return (
+    <a 
+      href="https://aakaario.com" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      className="made-in-badge"
+    >
+      <div className="badge-logo">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L2 19h20L12 2zm0 3.8L18.5 17h-13L12 5.8z" />
+        </svg>
+      </div>
+      <span className="badge-text">Made in Aakaar.io</span>
+    </a>
+  );
+}
+
 // ──────────────────────────────────────────
 // 6. MAIN APP COMPONENT
 // ──────────────────────────────────────────
@@ -887,6 +905,9 @@ export default function App() {
       <BackToTop />
 
       <Footer onNavigate={scrollToSection} />
+
+      {/* MADE IN AAKAAR BADGE */}
+      <MadeInBadge />
 
     </div>
   );
@@ -1560,10 +1581,10 @@ function GlobalStyles() {
       /* Back To Top Button Styles */
       .back-to-top {
         position: fixed;
-        bottom: 30px;
+        bottom: 30px; /* Base bottom position */
         right: 30px;
-        background: var(--text); /* Uses theme text color (Black in light, White in dark) */
-        color: var(--bg);        /* Inverted text color */
+        background: var(--text); 
+        color: var(--bg);        
         width: 50px;
         height: 50px;
         border-radius: 50%;
@@ -1577,7 +1598,7 @@ function GlobalStyles() {
         visibility: hidden;
         transform: translateY(20px);
         transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        z-index: 999;
+        z-index: 1002; /* Higher than badge to be above */
       }
 
       .back-to-top.visible {
@@ -1592,6 +1613,56 @@ function GlobalStyles() {
         transform: translateY(-5px);
         box-shadow: 0 15px 30px rgba(255, 92, 0, 0.4);
       }
+
+      /* MADE IN AAKAAR BADGE */
+      .made-in-badge {
+        position: fixed;
+        bottom: 30px; /* Arrow now sits at this base as well */
+        right: 30px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 8px 16px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        z-index: 1001; /* Lower than arrow */
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+      }
+
+      /* Position badge above arrow ONLY when arrow is visible */
+      .back-to-top.visible ~ .made-in-badge {
+         bottom: 95px; /* sit above arrow (30px + 50px + 15px gap) */
+      }
+
+      .made-in-badge:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent);
+      }
+
+      .badge-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text);
+      }
+
+      .badge-text {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text);
+        white-space: nowrap;
+      }
+
+      .badge-text span {
+        color: var(--accent);
+      }
+
+      .spacing-fix {
+        margin-left: 6px; /* Increased gap based on user request */
+      }
       
       @media (max-width: 768px) {
         .back-to-top {
@@ -1599,6 +1670,14 @@ function GlobalStyles() {
           right: 20px;
           width: 40px;
           height: 40px;
+        }
+        .made-in-badge {
+          bottom: 20px;
+          right: 20px;
+          padding: 6px 12px;
+        }
+        .back-to-top.visible ~ .made-in-badge {
+          bottom: 75px; /* lower height on mobile (20px + 40px + 15px gap) */
         }
       }
     `}</style>
