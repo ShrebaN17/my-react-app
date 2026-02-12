@@ -1,19 +1,61 @@
 import React, { useState, useEffect, useRef } from "react";
 
 // ──────────────────────────────────────────
-// 1. ICONS & HELPER COMPONENTS
+// 1. DATA & ASSETS
+// ──────────────────────────────────────────
+
+const TRUSTED_AVATARS = [
+  "https://randomuser.me/api/portraits/women/44.jpg",
+  "https://randomuser.me/api/portraits/men/32.jpg",
+  "https://randomuser.me/api/portraits/men/86.jpg"
+];
+
+const REVIEWS_DATA = [
+  { 
+    name: "Alex Rivera", 
+    role: "YouTuber, 1.5M Subs", 
+    text: "The retention on my shorts went up by 40% after working with VisWave Media. Insane results.",
+    img: "https://randomuser.me/api/portraits/men/46.jpg"
+  },
+  { 
+    name: "Sarah Chen", 
+    role: "Course Creator", 
+    text: "I used to spend 10 hours editing. Now I just record and upload. Game changer.",
+    img: "https://randomuser.me/api/portraits/women/65.jpg"
+  },
+  { 
+    name: "Mark Davis", 
+    role: "Tech Reviewer", 
+    text: "Quality is unmatched. They actually understand pacing and storytelling.",
+    img: "https://randomuser.me/api/portraits/men/22.jpg"
+  },
+  { 
+    name: "Jessica L.", 
+    role: "Lifestyle Vlogger", 
+    text: "Thumbnails are click magnets. My CTR doubled in the first week.",
+    img: "https://randomuser.me/api/portraits/women/28.jpg"
+  },
+  { 
+    name: "Ryan K.", 
+    role: "Streamer", 
+    text: "Fastest delivery I've seen. The team is super responsive and gets the vibe right.",
+    img: "https://randomuser.me/api/portraits/men/18.jpg"
+  }
+];
+
+// ──────────────────────────────────────────
+// 2. ICONS & SVGs
 // ──────────────────────────────────────────
 const SunIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
 const MoonIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
 const ArrowRight = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
+const ArrowUp = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>;
 const MenuIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const CloseIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 const ChevronDown = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>;
-
 const CrossIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{color: '#ff4d4d'}}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 const CheckIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" style={{color: '#fff'}}><polyline points="20 6 9 17 4 12"></polyline></svg>;
 const StarBullet = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{color: '#ff5c00'}}><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>;
-
 const TwitterIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>;
 const InstagramIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
 const LinkedInIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>;
@@ -21,6 +63,9 @@ const DiscordIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="
 const MailIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>;
 const PhoneIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>;
 
+// ──────────────────────────────────────────
+// 3. ANIMATION HELPERS
+// ──────────────────────────────────────────
 function AnimatedNumber({ value, duration = 2000 }) {
   const [count, setCount] = useState(0);
   const countRef = useRef(null);
@@ -118,7 +163,7 @@ function UploadVisual() {
 }
 
 // ──────────────────────────────────────────
-// 2. CONSTANTS
+// 4. CONTENT CONSTANTS
 // ──────────────────────────────────────────
 const SERVICES_DATA = [
   {
@@ -210,14 +255,6 @@ const SOLUTION_DATA = {
   ]
 };
 
-const REVIEWS_DATA = [
-  { name: "Alex Rivera", role: "YouTuber, 1.5M Subs", text: "The retention on my shorts went up by 40% after working with VisWave. Insane results." },
-  { name: "Sarah Chen", role: "Course Creator", text: "I used to spend 10 hours editing. Now I just record and upload. Game changer." },
-  { name: "Mark Davis", role: "Tech Reviewer", text: "Quality is unmatched. They actually understand pacing and storytelling." },
-  { name: "Jessica L.", role: "Lifestyle Vlogger", text: "Thumbnails are click magnets. My CTR doubled in the first week." },
-  { name: "Ryan K.", role: "Streamer", text: "Fastest delivery I've seen. The team is super responsive and gets the vibe right." }
-];
-
 const VIDEO_TESTIMONIALS = [
   { id: "video1", embedId: "dQw4w9WgXcQ", name: "Alex Hormozi", role: "Entrepreneur & Investor" },
   { id: "video2", embedId: "dQw4w9WgXcQ", name: "Ali Abdaal", role: "Productivity Expert" },
@@ -252,7 +289,7 @@ const FAQ_DATA = [
 ];
 
 // ──────────────────────────────────────────
-// 3. MAIN APP
+// 5. SUB-COMPONENTS
 // ──────────────────────────────────────────
 function Header({ onNavigate, theme, toggleTheme }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -261,7 +298,7 @@ function Header({ onNavigate, theme, toggleTheme }) {
     <nav className="nav-container">
       <div className="nav-wrapper">
         <div className="nav-left" onClick={() => onNavigate("hero")}>
-          <span className="brand-name">Vis<span>Wave</span></span>
+          <span className="brand-name">VisWave <span>Media</span></span>
         </div>
 
         <div className="nav-center desktop-only">
@@ -277,8 +314,9 @@ function Header({ onNavigate, theme, toggleTheme }) {
           <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === "dark" ? <SunIcon /> : <MoonIcon />}
           </button>
+          {/* Scroll to contact section */}
           <button className="nav-cta desktop-only" onClick={() => onNavigate("contact")}>
-            Contact <div className="circle-arrow"><ArrowRight /></div>
+            Book a Call <div className="circle-arrow"><ArrowRight /></div>
           </button>
           <button className="mobile-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
@@ -286,6 +324,7 @@ function Header({ onNavigate, theme, toggleTheme }) {
         </div>
       </div>
       
+      {/* MOBILE MENU */}
       <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
           <button onClick={() => {onNavigate("about"); setIsMenuOpen(false)}}>About</button>
           <button onClick={() => {onNavigate("services"); setIsMenuOpen(false)}}>Services</button>
@@ -293,13 +332,13 @@ function Header({ onNavigate, theme, toggleTheme }) {
           <button onClick={() => {onNavigate("pricing"); setIsMenuOpen(false)}}>Pricing</button>
           <button onClick={() => {onNavigate("reviews"); setIsMenuOpen(false)}}>Reviews</button>
           <button onClick={() => {onNavigate("faq"); setIsMenuOpen(false)}}>FAQ</button>
-          <button onClick={() => {onNavigate("contact"); setIsMenuOpen(false)}}>Contact</button>
+          {/* Scroll to contact section */}
+          <button onClick={() => {onNavigate("contact"); setIsMenuOpen(false)}}>Book a Call</button>
       </div>
     </nav>
   );
 }
 
-// ─── FAQ ITEM COMPONENT ───
 function FAQItem({ question, answer, isOpen, onClick }) {
   return (
     <div className={`faq-item ${isOpen ? 'open' : ''}`} onClick={onClick}>
@@ -314,7 +353,6 @@ function FAQItem({ question, answer, isOpen, onClick }) {
   );
 }
 
-// ─── FOOTER COMPONENT ───
 function Footer({ onNavigate }) {
   return (
     <footer className="footer-section">
@@ -323,13 +361,13 @@ function Footer({ onNavigate }) {
         <div className="footer-top">
           {/* Column 1: Brand */}
           <div className="footer-col brand-col">
-            <div className="footer-logo">Vis<span>Wave</span></div>
+            <div className="footer-logo">VisWave <span>Media</span></div>
             <p className="footer-tagline">
               Helping youtubers stand out with pro edits, fast delivery and what not!
             </p>
           </div>
 
-          {/* Column 2: Company - UPDATED WITH SCROLL LINKS */}
+          {/* Column 2: Company */}
           <div className="footer-col">
             <h4>Company</h4>
             <div className="footer-links">
@@ -361,14 +399,14 @@ function Footer({ onNavigate }) {
               <a href="#" className="social-link"><InstagramIcon /> Instagram</a>
             </div>
             <div className="contact-details">
-              <div className="contact-item"><MailIcon /> <span>hello@viswave.com</span></div>
+              <div className="contact-item"><MailIcon /> <span>hello@viswavemedia.com</span></div>
               <div className="contact-item"><PhoneIcon /> <span>+1 (555) 123-4567</span></div>
             </div>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <span>Copyright 2026 to VisWave</span>
+          <span>Copyright 2026 to VisWave Media</span>
           <span>Made with ❤️ & Code</span>
         </div>
 
@@ -382,6 +420,43 @@ function Footer({ onNavigate }) {
   );
 }
 
+function BackToTop() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.scrollY > 300) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener("scroll", toggleVisibility);
+    return () => window.removeEventListener("scroll", toggleVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
+
+  return (
+    <button 
+      className={`back-to-top ${isVisible ? 'visible' : ''}`} 
+      onClick={scrollToTop}
+      aria-label="Back to top"
+    >
+      <ArrowUp />
+    </button>
+  );
+}
+
+// ──────────────────────────────────────────
+// 6. MAIN APP COMPONENT
+// ──────────────────────────────────────────
 export default function App() {
   const [theme, setTheme] = useState("dark");
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
@@ -403,6 +478,11 @@ export default function App() {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
+  const handleBooking = () => {
+      // Placeholder: Connect to Calendly or similar
+      alert("Opening Booking Modal... (Connect your link here)");
+  };
+
   return (
     <div className="app-shell">
       <GlobalStyles />
@@ -414,9 +494,10 @@ export default function App() {
           <div className="hero-text-area">
             <div className="trust-pill">
               <div className="avatar-group">
-                <div className="avatar" />
-                <div className="avatar" />
-                <div className="avatar" />
+                {/* Render Trusted Avatars */}
+                {TRUSTED_AVATARS.map((src, i) => (
+                  <img key={i} src={src} className="avatar-img" alt="Trusted Creator" />
+                ))}
               </div>
               <span>Trusted By 100+ Creators</span>
             </div>
@@ -426,6 +507,7 @@ export default function App() {
             <p className="sub-text">
               Hook faster. Edit smarter. Grow your audience with scroll-stopping YouTube videos.
             </p>
+            {/* Scroll to contact section */}
             <button className="main-cta" onClick={() => scrollToSection('contact')}>
               Book a Call <div className="cta-circle"><ArrowRight /></div>
             </button>
@@ -622,6 +704,7 @@ export default function App() {
               <div className="price-tag">$899<span className="period">/month</span></div>
               <p className="plan-desc">For growing creators who post 4-6 videos/month</p>
             </div>
+            {/* Scroll to contact section */}
             <button className="plan-btn" onClick={() => scrollToSection('contact')}>
               Book a Call <ArrowRight />
             </button>
@@ -644,6 +727,7 @@ export default function App() {
               <div className="price-tag">$1599<span className="period">/month</span></div>
               <p className="plan-desc">For scaling creators who need volume & speed</p>
             </div>
+            {/* Scroll to contact section */}
             <button className="plan-btn" onClick={() => scrollToSection('contact')}>
               Book a Call <ArrowRight />
             </button>
@@ -665,6 +749,7 @@ export default function App() {
                 <h3>Custom Plan</h3>
                 <div className="price-tag">???<span className="period">/month</span></div>
                 <p className="plan-desc">For growing creators who post 4-6 videos/month</p>
+                {/* Scroll to contact section */}
                 <button className="plan-btn orange" onClick={() => scrollToSection('contact')}>
                   Book a Call <ArrowRight />
                 </button>
@@ -700,7 +785,10 @@ export default function App() {
                 <div className="review-card" key={i}>
                    <p className="review-text">"{review.text}"</p>
                    <div className="reviewer-info">
-                      <div className="reviewer-avatar" />
+                      {/* Render User Image if available */}
+                      {review.img && <img src={review.img} className="reviewer-img" alt={review.name} />}
+                      {!review.img && <div className="reviewer-avatar" />}
+                      
                       <div>
                          <div className="reviewer-name">{review.name}</div>
                          <div className="reviewer-role">{review.role}</div>
@@ -768,7 +856,8 @@ export default function App() {
               Whether it’s a one-off edit or a full channel transformation, <br />
               we’re ready when you are. Let’s talk ideas.
             </p>
-            <button className="main-cta white">
+            {/* Placeholder button action */}
+            <button className="main-cta white" onClick={handleBooking}>
               Book a Call <div className="cta-circle orange"><ArrowRight /></div>
             </button>
           </div>
@@ -786,6 +875,9 @@ export default function App() {
           </div>
         </div>
       </section>
+      
+      {/* BACK TO TOP BUTTON */}
+      <BackToTop />
 
       <Footer onNavigate={scrollToSection} />
 
@@ -794,7 +886,7 @@ export default function App() {
 }
 
 // ──────────────────────────────────────────
-// 4. GLOBAL STYLES
+// 7. GLOBAL STYLES (COMPLETE)
 // ──────────────────────────────────────────
 function GlobalStyles() {
   return (
@@ -816,6 +908,10 @@ function GlobalStyles() {
       }
 
       * { box-sizing: border-box; margin: 0; padding: 0; }
+      
+      /* PREMIUM SCROLL */
+      html { scroll-behavior: smooth; }
+
       body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
       .app-shell {
@@ -842,8 +938,54 @@ function GlobalStyles() {
       .circle-arrow { background: var(--bg); color: var(--text); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
       .nav-cta:hover .circle-arrow { background: #fff; color: var(--accent); }
       .mobile-toggle { display: none; background: none; border: none; color: var(--text); cursor: pointer; }
-      .mobile-menu { position: fixed; top: 80px; left: 0; width: 100%; background: var(--bg); padding: 20px; display: none; flex-direction: column; gap: 15px; border-bottom: 1px solid var(--grid); }
-      .mobile-menu.open { display: flex; }
+      
+      /* FIXED MOBILE MENU STYLES */
+      .mobile-menu { 
+        position: fixed; 
+        top: 80px; 
+        left: 0; 
+        width: 100%; 
+        height: calc(100vh - 80px); /* Full height */
+        background: var(--bg); 
+        padding: 40px 24px;
+        display: flex; 
+        flex-direction: column; 
+        gap: 20px; 
+        border-top: 1px solid var(--grid);
+        
+        /* New Slide Animation */
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 999;
+      }
+
+      .mobile-menu.open { 
+        transform: translateX(0); 
+      }
+      
+      /* Style the buttons inside mobile menu to remove white boxes */
+      .mobile-menu button {
+        background: transparent;
+        border: none;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 24px; 
+        font-weight: 700;
+        color: var(--text);
+        text-align: left;
+        padding: 10px 0;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-bottom: 1px solid var(--grid);
+      }
+      
+      .mobile-menu button:hover {
+        color: var(--accent);
+        padding-left: 10px;
+      }
+      
+      .mobile-menu button:last-child {
+        border-bottom: none;
+      }
 
       .main-cta { background: var(--text); color: var(--bg); padding: 16px 32px; border-radius: 100px; font-size: 16px; font-weight: 700; border: 2px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
       .main-cta:hover { background: var(--bg); color: var(--text); border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
@@ -859,8 +1001,11 @@ function GlobalStyles() {
       .hero-content { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr 400px; gap: 20px; padding: 0 24px; margin-bottom: 40px; align-items: center; }
       .trust-pill { background: var(--card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; display: inline-flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; margin-bottom: 30px; box-shadow: var(--shadow); }
       .avatar-group { display: flex; }
-      .avatar { width: 26px; height: 26px; border-radius: 50%; background: #ddd; border: 2px solid var(--card); margin-left: -10px; }
-      .avatar:first-child { margin-left: 0; }
+      
+      /* NEW AVATAR STYLES */
+      .avatar-img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 2px solid var(--card); margin-left: -10px; }
+      .avatar-img:first-child { margin-left: 0; }
+      
       .main-title { font-size: clamp(48px, 6vw, 80px); font-weight: 800; line-height: 1; letter-spacing: -2px; margin-bottom: 24px; }
       .orange-text { color: var(--accent); }
       .sub-text { font-size: 18px; color: var(--text-light); max-width: 480px; line-height: 1.6; margin-bottom: 40px; }
@@ -1164,6 +1309,9 @@ function GlobalStyles() {
       
       .reviewer-info { display: flex; align-items: center; gap: 12px; }
       .reviewer-avatar { width: 40px; height: 40px; background: #ddd; border-radius: 50%; }
+      /* NEW IMAGE STYLE */
+      .reviewer-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+      
       .reviewer-name { font-weight: 700; font-size: 14px; }
       .reviewer-role { font-size: 12px; color: var(--text-light); }
       
@@ -1271,7 +1419,7 @@ function GlobalStyles() {
         .faq-subtitle { max-width: 100%; }
       }
 
-      /* CTA SECTION */
+      /* CTA SECTION - RESTORED TO CARD STYLE */
       .cta-section { 
         padding: 60px 24px 100px;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1400,6 +1548,51 @@ function GlobalStyles() {
         .services-grid { grid-template-columns: 1fr; }
         .service-card { padding: 30px; min-height: auto; }
         .process-grid { grid-template-columns: 1fr; }
+      }
+      
+      /* Back To Top Button Styles */
+      .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--text); /* Uses theme text color (Black in light, White in dark) */
+        color: var(--bg);        /* Inverted text color */
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px solid transparent;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(20px);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        z-index: 999;
+      }
+
+      .back-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .back-to-top:hover {
+        background: var(--accent);
+        color: white;
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(255, 92, 0, 0.4);
+      }
+      
+      @media (max-width: 768px) {
+        .back-to-top {
+          bottom: 20px;
+          right: 20px;
+          width: 40px;
+          height: 40px;
+        }
       }
     `}</style>
   );
