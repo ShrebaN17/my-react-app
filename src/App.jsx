@@ -63,7 +63,32 @@ const MailIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="non
 const PhoneIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>;
 
 // ──────────────────────────────────────────
-// 3. ANIMATION HELPERS
+// 3. BUTTERY SMOOTH SCROLL HELPER
+// ──────────────────────────────────────────
+const slowScrollTo = (targetY, duration = 1200) => {
+  const startY = window.pageYOffset;
+  const difference = targetY - startY;
+  let startTime = null;
+
+  const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+
+  const animation = (currentTime) => {
+    if (startTime === null) startTime = currentTime;
+    const timeElapsed = currentTime - startTime;
+    const progress = Math.min(timeElapsed / duration, 1);
+    
+    window.scrollTo(0, startY + difference * easeInOutCubic(progress));
+
+    if (timeElapsed < duration) {
+      requestAnimationFrame(animation);
+    }
+  };
+
+  requestAnimationFrame(animation);
+};
+
+// ──────────────────────────────────────────
+// 4. ANIMATION HELPERS
 // ──────────────────────────────────────────
 function AnimatedNumber({ value, duration = 2000 }) {
   const [count, setCount] = useState(0);
@@ -162,7 +187,7 @@ function UploadVisual() {
 }
 
 // ──────────────────────────────────────────
-// 4. CONTENT CONSTANTS
+// 5. CONTENT CONSTANTS
 // ──────────────────────────────────────────
 const SERVICES_DATA = [
   {
@@ -288,7 +313,7 @@ const FAQ_DATA = [
 ];
 
 // ──────────────────────────────────────────
-// 5. SUB-COMPONENTS
+// 6. SUB-COMPONENTS
 // ──────────────────────────────────────────
 function Header({ onNavigate, theme, toggleTheme }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -313,7 +338,6 @@ function Header({ onNavigate, theme, toggleTheme }) {
           <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === "dark" ? <SunIcon /> : <MoonIcon />}
           </button>
-          {/* Scroll to contact section */}
           <button className="nav-cta desktop-only" onClick={() => onNavigate("contact")}>
             Book a Call <div className="circle-arrow"><ArrowRight /></div>
           </button>
@@ -323,7 +347,6 @@ function Header({ onNavigate, theme, toggleTheme }) {
         </div>
       </div>
       
-      {/* MOBILE MENU */}
       <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
           <button onClick={() => {onNavigate("about"); setIsMenuOpen(false)}}>About</button>
           <button onClick={() => {onNavigate("services"); setIsMenuOpen(false)}}>Services</button>
@@ -331,7 +354,6 @@ function Header({ onNavigate, theme, toggleTheme }) {
           <button onClick={() => {onNavigate("pricing"); setIsMenuOpen(false)}}>Pricing</button>
           <button onClick={() => {onNavigate("reviews"); setIsMenuOpen(false)}}>Reviews</button>
           <button onClick={() => {onNavigate("faq"); setIsMenuOpen(false)}}>FAQ</button>
-          {/* Scroll to contact section */}
           <button onClick={() => {onNavigate("contact"); setIsMenuOpen(false)}}>Book a Call</button>
       </div>
     </nav>
@@ -358,7 +380,6 @@ function Footer({ onNavigate }) {
       <div className="footer-container">
         
         <div className="footer-top">
-          {/* Column 1: Brand */}
           <div className="footer-col brand-col">
             <div className="footer-logo">VisWave <span>Media</span></div>
             <p className="footer-tagline">
@@ -366,7 +387,6 @@ function Footer({ onNavigate }) {
             </p>
           </div>
 
-          {/* Column 2: Company */}
           <div className="footer-col">
             <h4>Company</h4>
             <div className="footer-links">
@@ -378,7 +398,6 @@ function Footer({ onNavigate }) {
             </div>
           </div>
 
-          {/* Column 3: Legal */}
           <div className="footer-col">
             <h4>Legal Pages</h4>
             <div className="footer-links">
@@ -388,7 +407,6 @@ function Footer({ onNavigate }) {
             </div>
           </div>
 
-          {/* Column 4: Contact & Socials */}
           <div className="footer-col">
             <h4>Socials & Contact</h4>
             <div className="footer-links">
@@ -434,17 +452,10 @@ function BackToTop() {
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  };
-
   return (
     <button 
       className={`back-to-top ${isVisible ? 'visible' : ''}`} 
-      onClick={scrollToTop}
+      onClick={() => slowScrollTo(0)}
       aria-label="Back to top"
     >
       <ArrowUp />
@@ -465,13 +476,13 @@ function MadeInBadge() {
           <path d="M12 2L2 19h20L12 2zm0 3.8L18.5 17h-13L12 5.8z" />
         </svg>
       </div>
-      <span className="badge-text">Made in Aakaar.io</span>
+      <span className="badge-text">Made in <span className="spacing-fix">Aakaar</span></span>
     </a>
   );
 }
 
 // ──────────────────────────────────────────
-// 6. MAIN APP COMPONENT
+// 7. MAIN APP COMPONENT
 // ──────────────────────────────────────────
 export default function App() {
   const [theme, setTheme] = useState("dark");
@@ -481,12 +492,12 @@ export default function App() {
     document.body.className = theme; 
   }, [theme]);
 
-  const scrollToSection = (id) => {
+  const handleNavigate = (id) => {
     const element = document.getElementById(id);
     if (element) {
       const yOffset = -100; 
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+      const targetY = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      slowScrollTo(targetY);
     }
   };
 
@@ -494,23 +505,18 @@ export default function App() {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
-  const handleBooking = () => {
-      // Placeholder: Connect to Calendly or similar
-      alert("Opening Booking Modal... (Connect your link here)");
-  };
-
   return (
     <div className="app-shell">
       <GlobalStyles />
-      <Header onNavigate={scrollToSection} theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+      <Header onNavigate={handleNavigate} theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
       
       {/* HERO SECTION */}
       <section className="hero-section" id="hero">
         <div className="hero-content">
           <div className="hero-text-area">
-            <div className="trust-pill">
+            {/* Added onClick for navigating to reviews section */}
+            <div className="trust-pill" onClick={() => handleNavigate('reviews')}>
               <div className="avatar-group">
-                {/* Render Trusted Avatars */}
                 {TRUSTED_AVATARS.map((src, i) => (
                   <img key={i} src={src} className="avatar-img" alt="Trusted Creator" />
                 ))}
@@ -523,8 +529,7 @@ export default function App() {
             <p className="sub-text">
               Hook faster. Edit smarter. Grow your audience with scroll-stopping YouTube videos.
             </p>
-            {/* Scroll to contact section */}
-            <button className="main-cta" onClick={() => scrollToSection('contact')}>
+            <button className="main-cta" onClick={() => handleNavigate('contact')}>
               Book a Call <div className="cta-circle"><ArrowRight /></div>
             </button>
             <p className="caption">No pressure, just possibilities.</p>
@@ -720,8 +725,7 @@ export default function App() {
               <div className="price-tag">$899<span className="period">/month</span></div>
               <p className="plan-desc">For growing creators who post 4-6 videos/month</p>
             </div>
-            {/* Scroll to contact section */}
-            <button className="plan-btn" onClick={() => scrollToSection('contact')}>
+            <button className="plan-btn" onClick={() => handleNavigate('contact')}>
               Book a Call <ArrowRight />
             </button>
             <div className="plan-features">
@@ -743,8 +747,7 @@ export default function App() {
               <div className="price-tag">$1599<span className="period">/month</span></div>
               <p className="plan-desc">For scaling creators who need volume & speed</p>
             </div>
-            {/* Scroll to contact section */}
-            <button className="plan-btn" onClick={() => scrollToSection('contact')}>
+            <button className="plan-btn" onClick={() => handleNavigate('contact')}>
               Book a Call <ArrowRight />
             </button>
             <div className="plan-features">
@@ -765,8 +768,7 @@ export default function App() {
                 <h3>Custom Plan</h3>
                 <div className="price-tag">???<span className="period">/month</span></div>
                 <p className="plan-desc">For growing creators who post 4-6 videos/month</p>
-                {/* Scroll to contact section */}
-                <button className="plan-btn orange" onClick={() => scrollToSection('contact')}>
+                <button className="plan-btn orange" onClick={() => handleNavigate('contact')}>
                   Book a Call <ArrowRight />
                 </button>
               </div>
@@ -801,7 +803,6 @@ export default function App() {
                 <div className="review-card" key={i}>
                    <p className="review-text">"{review.text}"</p>
                    <div className="reviewer-info">
-                      {/* Render User Image if available */}
                       {review.img && <img src={review.img} className="reviewer-img" alt={review.name} />}
                       {!review.img && <div className="reviewer-avatar" />}
                       
@@ -872,8 +873,6 @@ export default function App() {
               Whether it’s a one-off edit or a full channel transformation, <br />
               we’re ready when you are. Let’s talk ideas.
             </p>
-
-            {/* Changed from <button> to <a> to support href */}
             <a 
               href="https://cal.com/viswavemedia/discovery" 
               target="_blank" 
@@ -885,8 +884,6 @@ export default function App() {
             </a>
           </div>
           
-          {/* Keep the rest of your card elements (pills/particles) below if they exist */}
-
           <div className="float-pill p1 dark">From meh to wow!</div>
           <div className="float-pill p2 orange">No Editor? No Problem</div>
           <div className="float-pill p3 dark">Watch Time Wins</div>
@@ -901,12 +898,8 @@ export default function App() {
         </div>
       </section>
       
-      {/* BACK TO TOP BUTTON */}
       <BackToTop />
-
-      <Footer onNavigate={scrollToSection} />
-
-      {/* MADE IN AAKAAR BADGE */}
+      <Footer onNavigate={handleNavigate} />
       <MadeInBadge />
 
     </div>
@@ -914,7 +907,7 @@ export default function App() {
 }
 
 // ──────────────────────────────────────────
-// 7. GLOBAL STYLES (COMPLETE)
+// 8. GLOBAL STYLES
 // ──────────────────────────────────────────
 function GlobalStyles() {
   return (
@@ -937,8 +930,7 @@ function GlobalStyles() {
 
       * { box-sizing: border-box; margin: 0; padding: 0; }
       
-      /* PREMIUM SCROLL */
-      html { scroll-behavior: smooth; }
+      html { scroll-behavior: auto; }
 
       body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
@@ -967,59 +959,20 @@ function GlobalStyles() {
       .nav-cta:hover .circle-arrow { background: #fff; color: var(--accent); }
       .mobile-toggle { display: none; background: none; border: none; color: var(--text); cursor: pointer; }
       
-      /* FIXED MOBILE MENU STYLES */
       .mobile-menu { 
-        position: fixed; 
-        top: 80px; 
-        left: 0; 
-        width: 100%; 
-        height: calc(100vh - 80px); /* Full height */
-        background: var(--bg); 
-        padding: 40px 24px;
-        display: flex; 
-        flex-direction: column; 
-        gap: 20px; 
-        border-top: 1px solid var(--grid);
-        
-        /* New Slide Animation */
-        transform: translateX(100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 999;
+        position: fixed; top: 80px; left: 0; width: 100%; height: calc(100vh - 80px); background: var(--bg); padding: 40px 24px;
+        display: flex; flex-direction: column; gap: 20px; border-top: 1px solid var(--grid);
+        transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 999;
       }
-
-      .mobile-menu.open { 
-        transform: translateX(0); 
-      }
-      
-      /* Style the buttons inside mobile menu to remove white boxes */
-      .mobile-menu button {
-        background: transparent;
-        border: none;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 24px; 
-        font-weight: 700;
-        color: var(--text);
-        text-align: left;
-        padding: 10px 0;
-        cursor: pointer;
-        transition: all 0.2s;
-        border-bottom: 1px solid var(--grid);
-      }
-      
-      .mobile-menu button:hover {
-        color: var(--accent);
-        padding-left: 10px;
-      }
-      
-      .mobile-menu button:last-child {
-        border-bottom: none;
-      }
+      .mobile-menu.open { transform: translateX(0); }
+      .mobile-menu button { background: transparent; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 700; color: var(--text); text-align: left; padding: 10px 0; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid var(--grid); }
+      .mobile-menu button:hover { color: var(--accent); padding-left: 10px; }
+      .mobile-menu button:last-child { border-bottom: none; }
 
       .main-cta { background: var(--text); color: var(--bg); padding: 16px 32px; border-radius: 100px; font-size: 16px; font-weight: 700; border: 2px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
       .main-cta:hover { background: var(--bg); color: var(--text); border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
       .cta-circle { background: var(--bg); color: var(--text); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
       .main-cta:hover .cta-circle { background: var(--accent); color: #fff; }
-      .main-cta.large { font-size: 18px; padding: 20px 40px; margin-top: 30px; }
       .main-cta.white { background: #fff; color: #000; box-shadow: 0 10px 25px rgba(255,255,255,0.1); }
       .main-cta.white:hover { background: #eee; transform: translateY(-3px); }
       .cta-circle.orange { background: var(--accent); color: #fff; }
@@ -1027,23 +980,23 @@ function GlobalStyles() {
       /* Hero Section */
       .hero-section { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding-top: 80px; }
       .hero-content { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr 400px; gap: 20px; padding: 0 24px; margin-bottom: 40px; align-items: center; }
-      .trust-pill { background: var(--card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; display: inline-flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; margin-bottom: 30px; box-shadow: var(--shadow); }
-      .avatar-group { display: flex; }
       
-      /* NEW AVATAR STYLES */
+      /* Updated trust-pill styles to show pointer on hover */
+      .trust-pill { background: var(--card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; display: inline-flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; margin-bottom: 30px; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.2s ease; }
+      .trust-pill:hover { transform: scale(1.05); }
+
+      .avatar-group { display: flex; }
       .avatar-img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 2px solid var(--card); margin-left: -10px; }
       .avatar-img:first-child { margin-left: 0; }
-      
       .main-title { font-size: clamp(48px, 6vw, 80px); font-weight: 800; line-height: 1; letter-spacing: -2px; margin-bottom: 24px; }
       .orange-text { color: var(--accent); }
       .sub-text { font-size: 18px; color: var(--text-light); max-width: 480px; line-height: 1.6; margin-bottom: 40px; }
       .caption { font-size: 13px; color: var(--text-light); margin-top: 16px; font-weight: 500; }
       .hero-visual-area { position: relative; height: 400px; width: 400px; }
       .floating-card { position: absolute; background: var(--card); padding: 24px; border-radius: 24px; width: 320px; border: 1px solid var(--border); box-shadow: var(--shadow); animation: floatAnim 6s infinite ease-in-out; z-index: 2; }
-      .card-1 { top: 0px; right: 0px; transform: rotate(-3deg); z-index: 2; }
-      .card-2 { top: 130px; right: 80px; transform: rotate(3deg); animation-delay: 2s; z-index: 1; }
+      .card-1 { top: 0px; right: 0px; transform: rotate(-3deg); z-index: 2; --r: -3deg; }
+      .card-2 { top: 130px; right: 80px; transform: rotate(3deg); animation-delay: 2s; z-index: 1; --r: 3deg; }
       @keyframes floatAnim { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-15px) rotate(var(--r, 0deg)); } }
-      .card-1 { --r: -3deg; } .card-2 { --r: 3deg; }
       .card-user { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
       .user-img { width: 40px; height: 40px; border-radius: 50%; background: #eee; }
       .card-actions { display: flex; justify-content: space-between; margin-top: 16px; font-size: 13px; font-weight: 700; color: var(--text-light); align-items: center; }
@@ -1070,6 +1023,7 @@ function GlobalStyles() {
       .stat-label { font-size: 14px; color: var(--text-light); font-weight: 600; }
       .stat-divider { width: 1px; height: 50px; background: var(--border); }
 
+      /* Services Section */
       .services-section { padding: 60px 24px 60px; display: flex; flex-direction: column; align-items: center; max-width: 1200px; margin: 0 auto; }
       .services-pill { background: var(--card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 20px; box-shadow: var(--shadow); }
       .services-title { font-size: clamp(32px, 5vw, 42px); font-weight: 800; margin-bottom: 15px; }
@@ -1105,11 +1059,13 @@ function GlobalStyles() {
       .step-visual-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; min-height: 120px; width: 100%; position: relative; }
       .step-content h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; color: #fff; }
       .step-content p { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.6; }
+      
       .proc-visual { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
       .v-upload .icon-circle { width: 50px; height: 50px; background: rgba(255,92,0,0.1); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2; }
       .floating-file { position: absolute; width: 30px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 6px; }
       .f1 { top: 10px; left: 30%; transform: rotate(-15deg); animation: float 4s infinite ease-in-out; }
       .f2 { bottom: 10px; right: 30%; transform: rotate(15deg); animation: float 5s infinite ease-in-out reverse; }
+      @keyframes float { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-10px) rotate(var(--r, 0deg)); } }
       
       .v-magic { flex-direction: column; justify-content: center; }
       .magic-timeline { width: 80%; height: 60px; display: flex; flex-direction: column; justify-content: space-evenly; position: relative; }
@@ -1127,143 +1083,59 @@ function GlobalStyles() {
       .chat-msg { padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; max-width: 80%; opacity: 0; }
       .left { align-self: flex-start; background: #333; color: #ccc; border-bottom-left-radius: 2px; transform-origin: bottom left; }
       .right { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 2px; transform-origin: bottom right; }
-      
       .msg-1 { animation: fadeMsg1 8s infinite; }
       .msg-2 { animation: fadeMsg2 8s infinite; }
       .msg-3 { animation: fadeMsg3 8s infinite; }
-
-      @keyframes fadeMsg1 {
-        0% { opacity: 0; transform: translateY(10px) scale(0.9); }
-        5% { opacity: 1; transform: translateY(0) scale(1); }
-        85% { opacity: 1; transform: translateY(0) scale(1); }
-        90%, 100% { opacity: 0; transform: scale(1); }
-      }
-      @keyframes fadeMsg2 {
-        0%, 30% { opacity: 0; transform: translateY(10px) scale(0.9); }
-        35% { opacity: 1; transform: translateY(0) scale(1); }
-        85% { opacity: 1; transform: translateY(0) scale(1); }
-        90%, 100% { opacity: 0; transform: scale(1); }
-      }
-      @keyframes fadeMsg3 {
-        0%, 60% { opacity: 0; transform: translateY(10px) scale(0.9); }
-        65% { opacity: 1; transform: translateY(0) scale(1); }
-        85% { opacity: 1; transform: translateY(0) scale(1); }
-        90%, 100% { opacity: 0; transform: scale(1); }
-      }
+      @keyframes fadeMsg1 { 0% { opacity: 0; transform: translateY(10px) scale(0.9); } 5% { opacity: 1; transform: translateY(0) scale(1); } 85% { opacity: 1; transform: translateY(0) scale(1); } 90%, 100% { opacity: 0; transform: scale(1); } }
+      @keyframes fadeMsg2 { 0%, 30% { opacity: 0; transform: translateY(10px) scale(0.9); } 35% { opacity: 1; transform: translateY(0) scale(1); } 85% { opacity: 1; transform: translateY(0) scale(1); } 90%, 100% { opacity: 0; transform: scale(1); } }
+      @keyframes fadeMsg3 { 0%, 60% { opacity: 0; transform: translateY(10px) scale(0.9); } 65% { opacity: 1; transform: translateY(0) scale(1); } 85% { opacity: 1; transform: translateY(0) scale(1); } 90%, 100% { opacity: 0; transform: scale(1); } }
 
       .v-grow .file-preview { background: #222; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; font-family: monospace; font-size: 10px; color: #888; position: absolute; top: 10px; transform: rotate(-3deg); }
       .upload-ui { width: 140px; height: 60px; position: absolute; bottom: 20px; display: flex; align-items: center; justify-content: center; }
-      
-      .upload-btn { 
-        width: 100px; height: 32px; background: var(--accent); border-radius: 6px; 
-        display: flex; align-items: center; justify-content: center; 
-        color: white; font-weight: 700; font-size: 12px; position: relative; overflow: hidden;
-        animation: btnState 5s infinite;
-      }
-      .txt-publish { position: absolute; }
-      .txt-publishing { position: absolute; display: flex; flex-direction: column; align-items: center; opacity: 0; gap: 2px; }
-      .percent-count { font-size: 9px; font-weight: 400; opacity: 0.8; }
-      
-      .upload-progress { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(0,0,0,0.2); opacity: 0; }
+      .upload-btn { width: 100px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; position: relative; overflow: hidden; animation: btnState 5s infinite; }
+      .txt-publish { position: absolute; animation: hideText 5s infinite; }
+      .txt-publishing { position: absolute; display: flex; flex-direction: column; align-items: center; opacity: 0; gap: 2px; animation: showText 5s infinite; }
+      .upload-progress { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(0,0,0,0.2); opacity: 0; animation: showBar 5s infinite; }
       .upload-bar { height: 100%; background: #4fff88; width: 0%; transition: width 0.1s linear; }
-      
-      .upload-cursor { 
-        position: absolute; bottom: -20px; right: -20px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-        animation: cursorAction 5s infinite; z-index: 10;
-      }
-
-      @keyframes cursorAction {
-        0% { transform: translate(40px, 40px); opacity: 0; }
-        15% { transform: translate(0, 0); opacity: 1; } 
-        20% { transform: scale(0.8); } 
-        25% { transform: scale(1); opacity: 1; }
-        35% { transform: translate(-10px, 10px); opacity: 0; } 
-        100% { opacity: 0; }
-      }
-      @keyframes btnState {
-        0%, 20% { width: 100px; background: var(--accent); }
-        21% { transform: scale(0.95); } 
-        25% { transform: scale(1); width: 120px; background: #333; } 
-        90% { width: 120px; background: #333; }
-        100% { width: 100px; background: var(--accent); }
-      }
-      .txt-publish { animation: hideText 5s infinite; }
-      .txt-publishing { animation: showText 5s infinite; }
-      .upload-progress { animation: showBar 5s infinite; }
-
+      .upload-cursor { position: absolute; bottom: -20px; right: -20px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); animation: cursorAction 5s infinite; z-index: 10; }
+      @keyframes cursorAction { 0% { transform: translate(40px, 40px); opacity: 0; } 15% { transform: translate(0, 0); opacity: 1; } 20% { transform: scale(0.8); } 25% { transform: scale(1); opacity: 1; } 35% { transform: translate(-10px, 10px); opacity: 0; } 100% { opacity: 0; } }
+      @keyframes btnState { 0%, 20% { width: 100px; background: var(--accent); } 21% { transform: scale(0.95); } 25% { transform: scale(1); width: 120px; background: #333; } 90% { width: 120px; background: #333; } 100% { width: 100px; background: var(--accent); } }
       @keyframes hideText { 0%, 20% { opacity: 1; } 25%, 100% { opacity: 0; } }
       @keyframes showText { 0%, 25% { opacity: 0; } 30%, 90% { opacity: 1; } 100% { opacity: 0; } }
       @keyframes showBar { 0%, 25% { opacity: 0; } 30%, 90% { opacity: 1; } 100% { opacity: 0; } }
 
-      /* SOLUTION SECTION */
-      .solution-section { 
-        padding: 60px 24px 60px;
-        display: flex; flex-direction: column; align-items: center; max-width: 1000px; margin: 0 auto; 
-      }
+      /* Comparison Section */
+      .solution-section { padding: 60px 24px 60px; display: flex; flex-direction: column; align-items: center; max-width: 1000px; margin: 0 auto; }
       .solution-pill { background: var(--card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 20px; box-shadow: var(--shadow); }
       .solution-title { font-size: clamp(32px, 5vw, 42px); font-weight: 800; margin-bottom: 15px; }
       .solution-subtitle { color: var(--text-light); text-align: center; line-height: 1.5; margin-bottom: 60px; }
-      
-      .comparison-container {
-        display: grid; grid-template-columns: 1fr 1fr;
-        width: 100%; border: 1px solid var(--border); border-radius: 32px;
-        overflow: hidden; background: var(--card);
-        box-shadow: var(--shadow);
-      }
-      
+      .comparison-container { display: grid; grid-template-columns: 1fr 1fr; width: 100%; border: 1px solid var(--border); border-radius: 32px; overflow: hidden; background: var(--card); box-shadow: var(--shadow); }
       .comparison-side { padding: 50px 40px; display: flex; flex-direction: column; gap: 25px; }
-      
       .problem-side { background: transparent; }
       .solution-side { background: #111; color: white; position: relative; }
       body.light .solution-side { background: #000; }
-      
       .side-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
-      
       .comparison-list { list-style: none; display: flex; flex-direction: column; gap: 20px; }
-      .comparison-list li { display: flex; align-items: center; gap: 15px; font-size: 15px; font-weight: 500; color: inherit; }
+      .comparison-list li { display: flex; align-items: center; gap: 15px; font-size: 15px; font-weight: 500; }
       .problem-side li { color: var(--text-light); }
       .solution-side li { color: #eee; }
-      
-      .icon-box {
-        width: 24px; height: 24px; border-radius: 50%; 
-        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      }
+      .icon-box { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
       .cross { background: rgba(255, 77, 77, 0.15); color: #ff4d4d; }
       .check { background: var(--accent); color: white; }
 
-      @media (max-width: 800px) {
-        .comparison-container { grid-template-columns: 1fr; }
-        .solution-side { padding-top: 40px; }
-      }
-
-      /* PRICING SECTION */
-      .pricing-section { 
-        padding: 60px 24px 60px;
-        display: flex; flex-direction: column; align-items: center; max-width: 1100px; margin: 0 auto; 
-      }
+      /* Pricing Section */
+      .pricing-section { padding: 60px 24px 60px; display: flex; flex-direction: column; align-items: center; max-width: 1100px; margin: 0 auto; }
       .pricing-pill { background: var(--card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 20px; box-shadow: var(--shadow); }
       .pricing-title { font-size: clamp(32px, 5vw, 42px); font-weight: 800; margin-bottom: 15px; }
       .pricing-subtitle { color: var(--text-light); text-align: center; line-height: 1.5; margin-bottom: 60px; }
-      
       .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; }
-      
-      .pricing-card {
-        border-radius: 32px; padding: 40px; display: flex; flex-direction: column;
-        transition: transform 0.3s ease; position: relative;
-      }
+      .pricing-card { border-radius: 32px; padding: 40px; display: flex; flex-direction: column; transition: transform 0.3s ease; position: relative; }
       .pricing-card:hover { transform: translateY(-5px); }
-      
       .pricing-card.light { background: var(--card); border: 1px solid var(--border); color: var(--text); box-shadow: var(--shadow); }
       .pricing-card.dark { background: #111; color: white; border: 1px solid rgba(255,255,255,0.1); }
       body.light .pricing-card.dark { background: #000; }
-      
       .pricing-card.popular { border: 2px solid var(--accent); }
-      .popular-badge {
-        position: absolute; top: -12px; right: 30px;
-        background: var(--accent); color: white; padding: 6px 14px;
-        border-radius: 20px; font-size: 12px; font-weight: 700;
-      }
-      
+      .popular-badge { position: absolute; top: -12px; right: 30px; background: var(--accent); color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
       .plan-header { margin-bottom: 30px; }
       .plan-header h3 { font-size: 20px; font-weight: 700; margin-bottom: 15px; }
       .price-tag { font-size: 42px; font-weight: 800; letter-spacing: -1px; display: flex; align-items: baseline; }
@@ -1271,298 +1143,124 @@ function GlobalStyles() {
       .dark .period { color: rgba(255,255,255,0.6); }
       .plan-desc { font-size: 14px; color: var(--text-light); margin-top: 15px; line-height: 1.5; }
       .dark .plan-desc { color: rgba(255,255,255,0.6); }
-      
-      .plan-btn {
-        width: 100%; padding: 14px; border-radius: 50px; font-weight: 700; font-size: 14px;
-        display: flex; align-items: center; justify-content: center; gap: 8px;
-        cursor: pointer; transition: 0.2s; border: none; margin-bottom: 30px;
-      }
+      .plan-btn { width: 100%; padding: 14px; border-radius: 50px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.2s; border: none; margin-bottom: 30px; }
       .pricing-card.light .plan-btn { background: #000; color: #fff; }
       body.dark .pricing-card.light .plan-btn { background: #fff; color: #000; }
       .pricing-card.dark .plan-btn { background: #fff; color: #000; }
       .plan-btn.orange { background: var(--accent); color: white; }
       .plan-btn:hover { transform: scale(1.02); }
-      
       .plan-features span { display: block; font-size: 13px; font-weight: 700; margin-bottom: 15px; }
       .plan-features ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
       .plan-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; }
-      
       .pricing-card.full-width { grid-column: span 2; display: flex; }
       .custom-content { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; width: 100%; align-items: center; }
       .custom-content .plan-header { margin-bottom: 0; }
       .custom-content .plan-btn { margin-top: 20px; margin-bottom: 0; width: auto; display: inline-flex; padding: 12px 30px; }
       .two-col ul { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 30px; }
 
-      @media (max-width: 900px) {
-        .pricing-grid { grid-template-columns: 1fr; }
-        .pricing-card.full-width { grid-column: span 1; }
-        .custom-content { grid-template-columns: 1fr; text-align: center; }
-        .custom-content .plan-header { align-items: center; display: flex; flex-direction: column; }
-        .two-col ul { grid-template-columns: 1fr; text-align: left; }
-      }
-
       /* Reviews Section */
-      .reviews-section { 
-        padding: 60px 24px 60px;
-        display: flex; flex-direction: column; align-items: center; width: 100%; overflow: hidden;
-      }
+      .reviews-section { padding: 60px 24px 60px; display: flex; flex-direction: column; align-items: center; width: 100%; overflow: hidden; }
       .reviews-pill { background: var(--card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 20px; box-shadow: var(--shadow); }
       .reviews-title { font-size: clamp(32px, 5vw, 42px); font-weight: 800; margin-bottom: 20px; text-align: center; }
       .reviews-subtitle { color: var(--text-light); text-align: center; line-height: 1.5; margin-bottom: 60px; }
-      
-      .reviews-marquee-container {
-        width: 100%; overflow: hidden;
-        mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-        -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-        margin-bottom: 60px; 
-      }
-      
-      .reviews-track {
-        display: flex; gap: 30px; width: max-content;
-        animation: scrollReviews 40s linear infinite;
-      }
-      
-      @media (hover: hover) and (pointer: fine) {
-        .reviews-track:hover { animation-play-state: paused; }
-      }
-      
-      .review-card {
-        width: 350px; background: var(--card); border: 1px solid var(--border);
-        padding: 30px; border-radius: 24px; flex-shrink: 0;
-        display: flex; flex-direction: column; justify-content: space-between; gap: 20px;
-        box-shadow: var(--shadow);
-      }
-      
+      .reviews-marquee-container { width: 100%; overflow: hidden; mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent); margin-bottom: 60px; }
+      .reviews-track { display: flex; gap: 30px; width: max-content; animation: scrollReviews 40s linear infinite; }
+      @media (hover: hover) and (pointer: fine) { .reviews-track:hover { animation-play-state: paused; } }
+      .review-card { width: 350px; background: var(--card); border: 1px solid var(--border); padding: 30px; border-radius: 24px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; box-shadow: var(--shadow); }
       .review-text { font-size: 15px; line-height: 1.6; font-style: italic; color: var(--text); }
-      
       .reviewer-info { display: flex; align-items: center; gap: 12px; }
       .reviewer-avatar { width: 40px; height: 40px; background: #ddd; border-radius: 50%; }
-      /* NEW IMAGE STYLE */
       .reviewer-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-      
       .reviewer-name { font-weight: 700; font-size: 14px; }
       .reviewer-role { font-size: 12px; color: var(--text-light); }
-      
-      @keyframes scrollReviews {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-33.33%); } 
-      }
-
-      .video-testimonials-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
-        width: 100%;
-        max-width: 1100px;
-        padding: 0 24px;
-        justify-items: center;
-      }
-      
-      .video-block {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 16px;
-        width: 100%;
-        max-width: 320px; 
-      }
-
-      .video-card {
-        background: #000;
-        border-radius: 20px;
-        overflow: hidden;
-        aspect-ratio: 9 / 16; 
-        width: 100%;
-        box-shadow: var(--shadow);
-        border: 1px solid var(--border);
-        transition: transform 0.3s ease;
-      }
+      @keyframes scrollReviews { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
+      .video-testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; width: 100%; max-width: 1100px; padding: 0 24px; justify-items: center; }
+      .video-block { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; width: 100%; max-width: 320px; }
+      .video-card { background: #000; border-radius: 20px; overflow: hidden; aspect-ratio: 9 / 16; width: 100%; box-shadow: var(--shadow); border: 1px solid var(--border); transition: transform 0.3s ease; }
       .video-card:hover { transform: translateY(-5px); }
-      
-      .video-frame {
-        width: 100%;
-        height: 100%;
-        border: none;
-      }
+      .video-frame { width: 100%; height: 100%; border: none; }
+      .v-name { font-weight: 700; font-size: 16px; color: var(--text); }
+      .v-role { font-size: 13px; color: var(--text-light); margin-top: 4px; }
 
-      .v-name {
-        font-weight: 700;
-        font-size: 16px;
-        color: var(--text);
-      }
-      .v-role {
-        font-size: 13px;
-        color: var(--text-light);
-        margin-top: 4px;
-      }
-
-      @media (max-width: 900px) {
-        .video-testimonials-grid { grid-template-columns: 1fr; }
-        .video-block { max-width: 100%; }
-        .video-card { max-width: 320px; } 
-      }
-
-      /* FAQ SECTION */
-      .faq-section { 
-        padding: 60px 24px 60px; 
-        max-width: 1200px; margin: 0 auto;
-        display: flex; justify-content: center;
-      }
-      
-      .faq-grid {
-        display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; width: 100%;
-      }
-      
+      /* FAQ Section */
+      .faq-section { padding: 60px 24px 60px; max-width: 1200px; margin: 0 auto; display: flex; justify-content: center; }
+      .faq-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; width: 100%; }
       .faq-left { position: sticky; top: 120px; height: fit-content; }
       .faq-pill { background: var(--card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 20px; box-shadow: var(--shadow); display: inline-block; }
       .faq-title { font-size: clamp(32px, 4vw, 48px); font-weight: 800; margin-bottom: 20px; line-height: 1.1; }
       .faq-subtitle { font-size: 16px; color: var(--text-light); line-height: 1.6; max-width: 350px; }
-      
       .faq-right { display: flex; flex-direction: column; gap: 15px; }
-      
-      .faq-item {
-        background: var(--card); border: 1px solid var(--border); border-radius: 20px;
-        padding: 24px; cursor: pointer; transition: all 0.3s ease;
-        box-shadow: var(--shadow); overflow: hidden;
-      }
+      .faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow); overflow: hidden; }
       .faq-item:hover { border-color: var(--accent); }
       .faq-item.open { border-color: var(--accent); background: #1a1a1a; }
-      body.light .faq-item.open { background: #fff; border-color: var(--accent); }
-      
+      body.light .faq-item.open { background: #fff; }
       .faq-question { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 16px; }
       .chevron { transition: transform 0.3s ease; }
       .chevron.rotate { transform: rotate(180deg); }
-      
-      .faq-answer { 
-        max-height: 0; overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; 
-        opacity: 0;
-      }
+      .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; opacity: 0; }
       .faq-item.open .faq-answer { max-height: 200px; opacity: 1; margin-top: 15px; }
       .answer-inner { color: var(--text-light); line-height: 1.6; font-size: 15px; }
 
-      @media (max-width: 900px) {
-        .faq-grid { grid-template-columns: 1fr; }
-        .faq-left { position: static; text-align: center; margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; }
-        .faq-subtitle { max-width: 100%; }
-      }
-
-      /* CTA SECTION - RESTORED TO CARD STYLE */
-      .cta-section { 
-        padding: 60px 24px 100px;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        width: 100%;
-      }
-      
-      .cta-card {
-        background: #111; color: white;
-        width: 100%; max-width: 1000px; 
-        border-radius: 40px;
-        padding: 60px 20px; 
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 40px 80px rgba(0,0,0,0.2);
-        display: flex; flex-direction: column; align-items: center;
-      }
-      
-      .cta-content {
-        position: relative; z-index: 5;
-        display: flex; flex-direction: column; align-items: center;
-        gap: 24px;
-        width: 100%;
-      }
-      
+      /* CTA Section */
+      .cta-section { padding: 60px 24px 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+      .cta-card { background: #111; color: white; width: 100%; max-width: 1000px; border-radius: 40px; padding: 60px 20px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; }
+      .cta-content { position: relative; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; }
       .cta-title { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
       .cta-subtitle { font-size: 16px; color: rgba(255,255,255,0.7); line-height: 1.6; max-width: 600px; }
-      
-      .float-pill {
-        position: absolute;
-        padding: 8px 16px; border-radius: 30px; font-size: 12px; font-weight: 700;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        animation: floatPill 6s infinite ease-in-out;
-        white-space: nowrap; z-index: 1;
-      }
-      
+      .float-pill { position: absolute; padding: 8px 16px; border-radius: 30px; font-size: 12px; font-weight: 700; box-shadow: 0 10px 20px rgba(0,0,0,0.3); animation: floatPill 6s infinite ease-in-out; white-space: nowrap; z-index: 1; }
       .float-pill.dark { background: #222; border: 1px solid #333; color: white; }
       .float-pill.orange { background: var(--accent); color: white; }
-      
-      .p1 { bottom: 40px; left: 5%; transform: rotate(-8deg); animation-delay: 0s; }
-      .p2 { bottom: 100px; left: 10%; transform: rotate(5deg); animation-delay: 1s; }
-      .p3 { bottom: 40px; right: 5%; transform: rotate(8deg); animation-delay: 2s; }
-      .p4 { bottom: 100px; right: 10%; transform: rotate(-5deg); animation-delay: 3s; }
-      .p5 { top: 40px; right: 8%; transform: rotate(12deg); animation-delay: 1.5s; }
-      
-      @keyframes floatPill { 
-        0%, 100% { transform: translateY(0) rotate(var(--r)); } 
-        50% { transform: translateY(-10px) rotate(var(--r)); } 
-      }
-      .p1 { --r: -8deg; } .p2 { --r: 5deg; } .p3 { --r: 8deg; } .p4 { --r: -5deg; } .p5 { --r: 12deg; }
-
-      @media (max-width: 800px) {
-        .float-pill { display: none; }
-        .cta-card { padding: 50px 20px; }
-      }
-      
+      .p1 { bottom: 40px; left: 5%; transform: rotate(-8deg); --r: -8deg; }
+      .p2 { bottom: 100px; left: 10%; transform: rotate(5deg); --r: 5deg; animation-delay: 1s; }
+      .p3 { bottom: 40px; right: 5%; transform: rotate(8deg); --r: 8deg; animation-delay: 2s; }
+      .p4 { bottom: 100px; right: 10%; transform: rotate(-5deg); --r: -5deg; animation-delay: 3s; }
+      .p5 { top: 40px; right: 8%; transform: rotate(12deg); --r: 12deg; animation-delay: 1.5s; }
+      @keyframes floatPill { 0%, 100% { transform: translateY(0) rotate(var(--r)); } 50% { transform: translateY(-10px) rotate(var(--r)); } }
       .cta-bg-particles { position: absolute; inset: 0; pointer-events: none; opacity: 0.3; }
       .p-dot { position: absolute; width: 4px; height: 4px; background: white; border-radius: 50%; animation: twinkle 3s infinite; }
       .d1 { top: 20%; left: 20%; } .d2 { top: 60%; right: 30%; animation-delay: 1s; } .d3 { top: 30%; right: 10%; animation-delay: 2s; }
       @keyframes twinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.5); } }
 
-      /* FOOTER SECTION */
-      .footer-section {
-        background: #050505;
-        color: #fff;
-        padding: 80px 24px 40px;
-        border-top: 1px solid rgba(255,255,255,0.1);
-        width: 100%;
-        position: relative;
-        overflow: hidden;
-      }
-      
-      .footer-container {
-        max-width: 1200px; margin: 0 auto;
-        display: flex; flex-direction: column; gap: 60px;
-        position: relative; z-index: 2;
-      }
-      
-      .footer-top {
-        display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 40px;
-      }
-      
-      .footer-col h4 { font-size: 16px; font-weight: 700; margin-bottom: 20px; color: #fff; }
-      
+      /* Footer */
+      .footer-section { background: #050505; color: #fff; padding: 80px 24px 40px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; position: relative; overflow: hidden; }
+      .footer-container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 60px; position: relative; z-index: 2; }
+      .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1.2fr; gap: 40px; }
+      .footer-col h4 { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
       .footer-logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; }
       .footer-logo span { color: var(--accent); }
       .footer-tagline { font-size: 14px; color: #888; line-height: 1.6; max-width: 250px; }
-      
       .footer-links { display: flex; flex-direction: column; gap: 12px; }
-      .footer-links button, .social-link {
-        background: none; border: none; color: #888; text-align: left; padding: 0;
-        font-size: 14px; cursor: pointer; transition: 0.2s;
-        display: flex; align-items: center; gap: 8px; text-decoration: none;
-      }
+      .footer-links button, .social-link { background: none; border: none; color: #888; text-align: left; padding: 0; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; text-decoration: none; }
       .footer-links button:hover, .social-link:hover { color: #fff; transform: translateX(3px); }
-      
       .contact-details { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
       .contact-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #ccc; }
       .contact-item svg { color: var(--accent); }
-      
-      .footer-bottom {
-        border-top: 1px solid rgba(255,255,255,0.1);
-        padding-top: 30px;
-        display: flex; justify-content: space-between;
-        font-size: 13px; color: #666;
-      }
-      
+      .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px; display: flex; justify-content: space-between; font-size: 13px; color: #666; }
       .footer-particles { position: absolute; inset: 0; pointer-events: none; }
       .fp { position: absolute; width: 2px; height: 2px; background: rgba(255,255,255,0.2); border-radius: 50%; }
       .d1 { top: 20%; left: 10%; } .d2 { top: 50%; right: 20%; } .d3 { bottom: 30%; left: 30%; }
 
-      @media (max-width: 900px) {
-        .footer-top { grid-template-columns: 1fr; gap: 40px; }
-        .footer-bottom { flex-direction: column; gap: 15px; align-items: center; }
+      /* Floating Buttons */
+      .back-to-top {
+        position: fixed; bottom: 30px; right: 30px; background: var(--text); color: var(--bg);
+        width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; border: 2px solid transparent; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 1002;
       }
+      .back-to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+      .back-to-top:hover { background: var(--accent); color: white; transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 92, 0, 0.4); }
+
+      .made-in-badge {
+        position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--border);
+        padding: 8px 16px; border-radius: 12px; display: flex; align-items: center; gap: 8px; text-decoration: none;
+        z-index: 1001; box-shadow: var(--shadow); transition: all 0.3s ease;
+      }
+      .back-to-top.visible ~ .made-in-badge { bottom: 95px; }
+      .made-in-badge:hover { transform: translateY(-2px); border-color: var(--accent); }
+      .badge-logo { display: flex; align-items: center; justify-content: center; color: var(--text); }
+      .badge-text { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; }
+      .badge-text span { color: var(--accent); }
+      .spacing-fix { margin-left: 6px; }
 
       @media (max-width: 960px) {
         .hero-content { grid-template-columns: 1fr; text-align: center; }
@@ -1576,109 +1274,19 @@ function GlobalStyles() {
         .services-grid { grid-template-columns: 1fr; }
         .service-card { padding: 30px; min-height: auto; }
         .process-grid { grid-template-columns: 1fr; }
-      }
-      
-      /* Back To Top Button Styles */
-      .back-to-top {
-        position: fixed;
-        bottom: 30px; /* Base bottom position */
-        right: 30px;
-        background: var(--text); 
-        color: var(--bg);        
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        border: 2px solid transparent;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(20px);
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        z-index: 1002; /* Higher than badge to be above */
-      }
-
-      .back-to-top.visible {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-      }
-
-      .back-to-top:hover {
-        background: var(--accent);
-        color: white;
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(255, 92, 0, 0.4);
-      }
-
-      /* MADE IN AAKAAR BADGE */
-      .made-in-badge {
-        position: fixed;
-        bottom: 30px; /* Arrow now sits at this base as well */
-        right: 30px;
-        background: var(--card);
-        border: 1px solid var(--border);
-        padding: 8px 16px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-        z-index: 1001; /* Lower than arrow */
-        box-shadow: var(--shadow);
-        transition: all 0.3s ease;
-      }
-
-      /* Position badge above arrow ONLY when arrow is visible */
-      .back-to-top.visible ~ .made-in-badge {
-         bottom: 95px; /* sit above arrow (30px + 50px + 15px gap) */
-      }
-
-      .made-in-badge:hover {
-        transform: translateY(-2px);
-        border-color: var(--accent);
-      }
-
-      .badge-logo {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text);
-      }
-
-      .badge-text {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--text);
-        white-space: nowrap;
-      }
-
-      .badge-text span {
-        color: var(--accent);
-      }
-
-      .spacing-fix {
-        margin-left: 6px; /* Increased gap based on user request */
-      }
-      
-      @media (max-width: 768px) {
-        .back-to-top {
-          bottom: 20px;
-          right: 20px;
-          width: 40px;
-          height: 40px;
-        }
-        .made-in-badge {
-          bottom: 20px;
-          right: 20px;
-          padding: 6px 12px;
-        }
-        .back-to-top.visible ~ .made-in-badge {
-          bottom: 75px; /* lower height on mobile (20px + 40px + 15px gap) */
-        }
+        .comparison-container { grid-template-columns: 1fr; }
+        .pricing-grid { grid-template-columns: 1fr; }
+        .pricing-card.full-width { grid-column: span 1; }
+        .custom-content { grid-template-columns: 1fr; text-align: center; }
+        .two-col ul { grid-template-columns: 1fr; }
+        .video-testimonials-grid { grid-template-columns: 1fr; }
+        .faq-grid { grid-template-columns: 1fr; }
+        .faq-left { position: static; text-align: center; margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; }
+        .footer-top { grid-template-columns: 1fr; }
+        .footer-bottom { flex-direction: column; align-items: center; text-align: center; }
+        .back-to-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+        .made-in-badge { bottom: 20px; right: 20px; padding: 6px 12px; }
+        .back-to-top.visible ~ .made-in-badge { bottom: 75px; }
       }
     `}</style>
   );
