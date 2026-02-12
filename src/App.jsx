@@ -514,7 +514,6 @@ export default function App() {
       <section className="hero-section" id="hero">
         <div className="hero-content">
           <div className="hero-text-area">
-            {/* Added onClick for navigating to reviews section */}
             <div className="trust-pill" onClick={() => handleNavigate('reviews')}>
               <div className="avatar-group">
                 {TRUSTED_AVATARS.map((src, i) => (
@@ -536,6 +535,10 @@ export default function App() {
           </div>
 
           <div className="hero-visual-area desktop-only">
+             {/* GLOW BACKGROUNDS */}
+             <div className="hero-glow glow-1" />
+             <div className="hero-glow glow-2" />
+
             <div className="floating-card card-1">
               <div className="card-user">
                 <div className="user-img" />
@@ -981,7 +984,6 @@ function GlobalStyles() {
       .hero-section { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding-top: 80px; }
       .hero-content { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr 400px; gap: 20px; padding: 0 24px; margin-bottom: 40px; align-items: center; }
       
-      /* Updated trust-pill styles to show pointer on hover */
       .trust-pill { background: var(--card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; display: inline-flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; margin-bottom: 30px; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.2s ease; }
       .trust-pill:hover { transform: scale(1.05); }
 
@@ -993,6 +995,33 @@ function GlobalStyles() {
       .sub-text { font-size: 18px; color: var(--text-light); max-width: 480px; line-height: 1.6; margin-bottom: 40px; }
       .caption { font-size: 13px; color: var(--text-light); margin-top: 16px; font-weight: 500; }
       .hero-visual-area { position: relative; height: 400px; width: 400px; }
+
+      /* ORANGE GLOW EFFECT STYLES */
+      .hero-glow {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 92, 0, 0.4) 0%, rgba(255, 92, 0, 0) 70%);
+        border-radius: 50%;
+        filter: blur(40px);
+        z-index: 0;
+        pointer-events: none;
+      }
+      .glow-1 {
+        top: -50px;
+        right: -20px;
+        animation: pulseGlow 4s infinite alternate ease-in-out;
+      }
+      .glow-2 {
+        bottom: 50px;
+        left: 0px;
+        animation: pulseGlow 6s infinite alternate-reverse ease-in-out;
+      }
+      @keyframes pulseGlow {
+        0% { transform: scale(1); opacity: 0.5; }
+        100% { transform: scale(1.3); opacity: 0.8; }
+      }
+
       .floating-card { position: absolute; background: var(--card); padding: 24px; border-radius: 24px; width: 320px; border: 1px solid var(--border); box-shadow: var(--shadow); animation: floatAnim 6s infinite ease-in-out; z-index: 2; }
       .card-1 { top: 0px; right: 0px; transform: rotate(-3deg); z-index: 2; --r: -3deg; }
       .card-2 { top: 130px; right: 80px; transform: rotate(3deg); animation-delay: 2s; z-index: 1; --r: 3deg; }
@@ -1065,7 +1094,6 @@ function GlobalStyles() {
       .floating-file { position: absolute; width: 30px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 6px; }
       .f1 { top: 10px; left: 30%; transform: rotate(-15deg); animation: float 4s infinite ease-in-out; }
       .f2 { bottom: 10px; right: 30%; transform: rotate(15deg); animation: float 5s infinite ease-in-out reverse; }
-      @keyframes float { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-10px) rotate(var(--r, 0deg)); } }
       
       .v-magic { flex-direction: column; justify-content: center; }
       .magic-timeline { width: 80%; height: 60px; display: flex; flex-direction: column; justify-content: space-evenly; position: relative; }
