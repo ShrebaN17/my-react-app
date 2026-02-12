@@ -476,7 +476,7 @@ function MadeInBadge() {
           <path d="M12 2L2 19h20L12 2zm0 3.8L18.5 17h-13L12 5.8z" />
         </svg>
       </div>
-      <span className="badge-text">Made in <span className="spacing-fix">Aakaar</span></span>
+      <span className="badge-text">Made in Aakaar.io</span>
     </a>
   );
 }
