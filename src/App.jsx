@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 
 // ──────────────────────────────────────────
-// 1. DATA & ASSETS
+// 1. DATA, ASSETS & CONFIG
 // ──────────────────────────────────────────
+
+// 🔥 IMPORTANT: Paste your YouTube Data API v3 Key here to fetch actual views, titles, and high-res thumbnails!
+// Get one for free at: https://console.cloud.google.com/
+const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY; 
 
 const TRUSTED_AVATARS = [
   "https://randomuser.me/api/portraits/women/44.jpg",
@@ -43,6 +47,32 @@ const REVIEWS_DATA = [
   }
 ];
 
+const PORTFOLIO_DATA = {
+  featured: {
+    id: "feat1",
+    videoId: "p4g5OL8g1M0"
+  },
+  longForm: [
+    { id: "lf1", videoId: "qMV6c1LLuXA" },
+    { id: "lf2", videoId: "57Y6xK0AXII" },
+    { id: "lf3", videoId: "DCVwVOmOwls" }
+  ],
+  shorts: [
+    { id: "s1", videoId: "AEjCls-Zs6s" },
+    { id: "s2", videoId: "y0UG65Tlndc" },
+    { id: "s3", videoId: "5oNF6lqqO8Q" },
+    { id: "s4", videoId: "oOkp_3oTyVM" },
+    { id: "s5", videoId: "KjV6CJHNN6I" },
+    { id: "s6", videoId: "GL4SSanN55Y" }
+  ]
+};
+
+const VIDEO_TESTIMONIALS = [
+  { id: "video1", videoId: "dQw4w9WgXcQ", name: "Alex Hormozi", role: "Entrepreneur & Investor" },
+  { id: "video2", videoId: "dQw4w9WgXcQ", name: "Ali Abdaal", role: "Productivity Expert" },
+  { id: "video3", videoId: "dQw4w9WgXcQ", name: "Iman Gadzhi", role: "Business Owner" }
+];
+
 // ──────────────────────────────────────────
 // 2. ICONS & SVGs
 // ──────────────────────────────────────────
@@ -61,6 +91,8 @@ const InstagramIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill
 const LinkedInIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>;
 const MailIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>;
 const PhoneIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>;
+const PlayIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>;
+const EyeIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
 
 // ──────────────────────────────────────────
 // 3. BUTTERY SMOOTH SCROLL HELPER
@@ -88,7 +120,7 @@ const slowScrollTo = (targetY, duration = 1200) => {
 };
 
 // ──────────────────────────────────────────
-// 4. ANIMATION HELPERS
+// 4. ANIMATION & UTILITY HELPERS
 // ──────────────────────────────────────────
 function AnimatedNumber({ value, duration = 2000 }) {
   const [count, setCount] = useState(0);
@@ -130,6 +162,14 @@ function AnimatedNumber({ value, duration = 2000 }) {
       {count.toLocaleString()}{suffix}
     </span>
   );
+}
+
+function formatViews(viewCount) {
+  if (!viewCount) return null;
+  const views = parseInt(viewCount, 10);
+  if (views >= 1000000) return (views / 1000000).toFixed(1) + "M Views";
+  if (views >= 1000) return (views / 1000).toFixed(1) + "K Views";
+  return views + " Views";
 }
 
 function UploadVisual() {
@@ -279,12 +319,6 @@ const SOLUTION_DATA = {
   ]
 };
 
-const VIDEO_TESTIMONIALS = [
-  { id: "video1", embedId: "dQw4w9WgXcQ", name: "Alex Hormozi", role: "Entrepreneur & Investor" },
-  { id: "video2", embedId: "dQw4w9WgXcQ", name: "Ali Abdaal", role: "Productivity Expert" },
-  { id: "video3", embedId: "dQw4w9WgXcQ", name: "Iman Gadzhi", role: "Business Owner" }
-];
-
 const FAQ_DATA = [
   {
     question: "What types of videos do you edit?",
@@ -315,201 +349,180 @@ const FAQ_DATA = [
 // ──────────────────────────────────────────
 // 6. SUB-COMPONENTS
 // ──────────────────────────────────────────
-function Header({ onNavigate, theme, toggleTheme }) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
+
+// Smart YouTube Component: Fetches Data, Displays Custom UI, Loads Iframe on Click
+function DynamicYouTubeCard({ videoId, type = "landscape", showViews = false, showTitle = false, customFallbackTitle }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [videoData, setVideoData] = useState({
+     title: customFallbackTitle || "", // Removed default text!
+     thumb: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+     views: null
+  });
+
+  useEffect(() => {
+    // Silently fall back to standard images if API Key is not set yet
+    if (!YOUTUBE_API_KEY || YOUTUBE_API_KEY === "YOUR_API_KEY_HERE") return;
+
+    fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${YOUTUBE_API_KEY}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.items && data.items.length > 0) {
+          const info = data.items[0];
+          setVideoData({
+            title: info.snippet.title,
+            // Fallback chain for best available quality
+            thumb: info.snippet.thumbnails?.maxres?.url || info.snippet.thumbnails?.high?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+            views: info.statistics.viewCount
+          });
+        }
+      })
+      .catch(err => console.error("YouTube API Error:", err));
+  }, [videoId]);
+
+  const formattedViews = showViews && videoData.views ? formatViews(videoData.views) : null;
+
   return (
-    <nav className="nav-container">
-      <div className="nav-wrapper">
-        <div className="nav-left" onClick={() => onNavigate("hero")}>
-          <span className="brand-name">VisWave <span>Media</span></span>
-        </div>
+    <div className={`portfolio-card ${type} ${isPlaying ? 'playing' : ''}`} onClick={() => setIsPlaying(true)}>
+      {!isPlaying ? (
+        <>
+          <img src={videoData.thumb} alt={videoData.title} className="p-thumb" />
+          
+          {formattedViews && (
+            <div className="views-badge">
+              <EyeIcon /> {formattedViews}
+            </div>
+          )}
 
-        <div className="nav-center desktop-only">
-          <button onClick={() => onNavigate("about")}>About</button>
-          <button onClick={() => onNavigate("services")}>Services</button>
-          <button onClick={() => onNavigate("process")}>Process</button>
-          <button onClick={() => onNavigate("pricing")}>Pricing</button>
-          <button onClick={() => onNavigate("reviews")}>Reviews</button>
-          <button onClick={() => onNavigate("faq")}>FAQ</button>
-        </div>
-
-        <div className="nav-right">
-          <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-            {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-          </button>
-          <button className="nav-cta desktop-only" onClick={() => onNavigate("contact")}>
-            Book a Call <div className="circle-arrow"><ArrowRight /></div>
-          </button>
-          <button className="mobile-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
-          </button>
-        </div>
-      </div>
-      
-      <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
-          <button onClick={() => {onNavigate("about"); setIsMenuOpen(false)}}>About</button>
-          <button onClick={() => {onNavigate("services"); setIsMenuOpen(false)}}>Services</button>
-          <button onClick={() => {onNavigate("process"); setIsMenuOpen(false)}}>Process</button>
-          <button onClick={() => {onNavigate("pricing"); setIsMenuOpen(false)}}>Pricing</button>
-          <button onClick={() => {onNavigate("reviews"); setIsMenuOpen(false)}}>Reviews</button>
-          <button onClick={() => {onNavigate("faq"); setIsMenuOpen(false)}}>FAQ</button>
-          <button onClick={() => {onNavigate("contact"); setIsMenuOpen(false)}}>Book a Call</button>
-      </div>
-    </nav>
-  );
-}
-
-function FAQItem({ question, answer, isOpen, onClick }) {
-  return (
-    <div className={`faq-item ${isOpen ? 'open' : ''}`} onClick={onClick}>
-      <div className="faq-question">
-        <span>{question}</span>
-        <div className={`chevron ${isOpen ? 'rotate' : ''}`}><ChevronDown /></div>
-      </div>
-      <div className="faq-answer">
-        <div className="answer-inner">{answer}</div>
-      </div>
+          <div className="play-overlay">
+            <div className="play-btn-circle">
+              <PlayIcon />
+            </div>
+          </div>
+          
+          {/* Title overlay is now completely hidden by default */}
+          {showTitle && videoData.title && (
+             <div className="p-title-overlay">{videoData.title}</div>
+          )}
+        </>
+      ) : (
+        <iframe 
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`} 
+          title="YouTube video player" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen
+          className="p-iframe"
+        ></iframe>
+      )}
     </div>
   );
 }
 
-function Footer({ onNavigate }) {
+function WorkPage({ openFaqIndex, toggleFaq }) {
   return (
-    <footer className="footer-section">
-      <div className="footer-container">
-        
-        <div className="footer-top">
-          <div className="footer-col brand-col">
-            <div className="footer-logo">VisWave <span>Media</span></div>
-            <p className="footer-tagline">
-              Helping youtubers stand out with pro edits, fast delivery and what not!
+    <div className="page-wrapper">
+      <section className="work-section page-mode" id="work">
+        {/* PART 1: LONG FORM / HIGHLIGHTS */}
+        <div className="work-container">
+          <div className="section-header-left">
+             <h2 className="work-title">Our Work</h2>
+             <p className="work-subtitle">YOU FILM IT. WE SHAPE IT. TOGETHER WE BUILD SOMETHING PEOPLE WANT TO WATCH.</p>
+          </div>
+
+          <div className="highlights-grid">
+             {/* Big Featured Video */}
+             <div className="feat-video-wrapper">
+                <DynamicYouTubeCard 
+                   videoId={PORTFOLIO_DATA.featured.videoId} 
+                   type="featured"
+                   showViews={true}
+                   showTitle={false}
+                />
+             </div>
+             
+             {/* Row of 3 smaller videos */}
+             <div className="standard-video-row">
+                {PORTFOLIO_DATA.longForm.map((vid) => (
+                   <DynamicYouTubeCard 
+                     key={vid.id} 
+                     videoId={vid.videoId} 
+                     type="landscape" 
+                     showViews={true}
+                     showTitle={false} 
+                   />
+                ))}
+             </div>
+          </div>
+        </div>
+
+        {/* PART 2: SHORT FORM */}
+        <div className="work-container shorts-container">
+           <div className="section-header-left">
+             <h2 className="work-title">Short Form Content</h2>
+             <p className="work-subtitle">HOOK. HOLD. HIT. REELS AND SHORTS THAT DON'T GET SKIPPED.</p>
+          </div>
+          
+          <div className="shorts-grid">
+             {PORTFOLIO_DATA.shorts.map((vid) => (
+                 <DynamicYouTubeCard 
+                   key={vid.id} 
+                   videoId={vid.videoId} 
+                   type="portrait" 
+                   showViews={false}
+                   showTitle={false} 
+                 />
+             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION ADDED TO WORK PAGE */}
+      <section className="faq-section" id="faq">
+        <div className="faq-grid">
+          <div className="faq-left">
+            <div className="faq-pill">
+              <span className="rotating-star">✦</span> FAQ
+            </div>
+            <h2 className="faq-title">Got Questions? <br /> We Got Answers</h2>
+            <p className="faq-subtitle">
+              Straightforward, no-fluff answers to help you feel confident about working with us.
             </p>
           </div>
 
-          <div className="footer-col">
-            <h4>Company</h4>
-            <div className="footer-links">
-              <button onClick={() => onNavigate("hero")}>Home</button>
-              <button onClick={() => onNavigate("services")}>Services</button>
-              <button onClick={() => onNavigate("process")}>Process</button>
-              <button onClick={() => onNavigate("reviews")}>Reviews</button>
-              <button onClick={() => onNavigate("faq")}>FAQ</button>
-            </div>
-          </div>
-
-          <div className="footer-col">
-            <h4>Legal Pages</h4>
-            <div className="footer-links">
-              <button>Privacy Policy</button>
-              <button>Terms of Services</button>
-              <button>Refund Policy</button>
-            </div>
-          </div>
-
-          <div className="footer-col">
-            <h4>Socials & Contact</h4>
-            <div className="footer-links">
-              <a href="#" className="social-link"><TwitterIcon /> Twitter</a>
-              <a href="https://www.linkedin.com/company/viswavemedia" className="social-link"><LinkedInIcon /> LinkedIn</a>
-              <a href="https://www.instagram.com/viswavemedia/" className="social-link"><InstagramIcon /> Instagram</a>
-            </div>
-            <div className="contact-details">
-              <div className="contact-item"><MailIcon /> <span>hello@viswavemedia.com</span></div>
-              <div className="contact-item"><PhoneIcon /> <span>+91 8280669173</span></div>
-            </div>
+          <div className="faq-right">
+            {FAQ_DATA.map((item, index) => (
+              <FAQItem 
+                key={index} 
+                question={item.question} 
+                answer={item.answer} 
+                isOpen={openFaqIndex === index} 
+                onClick={() => toggleFaq(index)} 
+              />
+            ))}
           </div>
         </div>
-
-        <div className="footer-bottom">
-          <span>Copyright © 2026 to <a href="https://www.instagram.com/viswavemedia/">VisWave Media</a></span>
-          <span>Made with ❤️ by <a href="https://aakaario.com">Aakaar.io</a></span>
-        </div>
-
-        <div className="footer-particles">
-           <div className="fp d1" />
-           <div className="fp d2" />
-           <div className="fp d3" />
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-function BackToTop() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const toggleVisibility = () => {
-      if (window.scrollY > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
-
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
-  }, []);
-
-  return (
-    <button 
-      className={`back-to-top ${isVisible ? 'visible' : ''}`} 
-      onClick={() => slowScrollTo(0)}
-      aria-label="Back to top"
-    >
-      <ArrowUp />
-    </button>
-  );
-}
-
-function MadeInBadge() {
-  return (
-    <a 
-      href="https://aakaario.com" 
-      target="_blank" 
-      rel="noopener noreferrer" 
-      className="made-in-badge"
-    >
-      <div className="badge-logo">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2L2 19h20L12 2zm0 3.8L18.5 17h-13L12 5.8z" />
-        </svg>
-      </div>
-      <span className="badge-text">Made in Aakaar.io</span>
-    </a>
-  );
-}
-
-// ──────────────────────────────────────────
-// 7. MAIN APP COMPONENT
-// ──────────────────────────────────────────
-export default function App() {
-  const [theme, setTheme] = useState("dark");
-  const [openFaqIndex, setOpenFaqIndex] = useState(null);
-
-  useEffect(() => { 
-    document.body.className = theme; 
-  }, [theme]);
-
-  const handleNavigate = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const yOffset = -100; 
-      const targetY = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      slowScrollTo(targetY);
-    }
-  };
-
-  const toggleFaq = (index) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index);
-  };
-
-  return (
-    <div className="app-shell">
-      <GlobalStyles />
-      <Header onNavigate={handleNavigate} theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+      </section>
       
+      {/* Call to action at the bottom of the work page */}
+      <section className="cta-section">
+        <div className="cta-card" style={{ maxWidth: 800, padding: '40px 20px' }}>
+          <div className="cta-content">
+            <h2 className="cta-title" style={{ fontSize: '36px' }}>Let's Build Your Next Viral Video</h2>
+            <a href="https://cal.com/viswavemedia/discovery" target="_blank" rel="noopener noreferrer" className="main-cta white" style={{ textDecoration: 'none' }}>
+              Book a Call <div className="cta-circle orange"><ArrowRight /></div>
+            </a>
+          </div>
+          <div className="cta-bg-particles">
+             <div className="p-dot d1" /> <div className="p-dot d2" /> <div className="p-dot d3" />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
+  return (
+    <>
       {/* HERO SECTION */}
       <section className="hero-section" id="hero">
         <div className="hero-content">
@@ -592,17 +605,17 @@ export default function App() {
         </h2>
         <div className="stats-container">
           <div className="stat-item">
-            <div className="stat-number"><AnimatedNumber value="1,200+" /></div>
+            <div className="stat-number"><AnimatedNumber value="300+" /></div>
             <div className="stat-label">Videos Delivered</div>
           </div>
           <div className="stat-divider"></div>
           <div className="stat-item">
-            <div className="stat-number"><AnimatedNumber value="300+" /></div>
+            <div className="stat-number"><AnimatedNumber value="20+" /></div>
             <div className="stat-label">Creators Served</div>
           </div>
           <div className="stat-divider"></div>
           <div className="stat-item">
-            <div className="stat-number"><AnimatedNumber value="450M+" /></div>
+            <div className="stat-number"><AnimatedNumber value="40M+" /></div>
             <div className="stat-label">Total Views</div>
           </div>
         </div>
@@ -819,21 +832,19 @@ export default function App() {
           </div>
         </div>
 
+        {/* DYNAMIC YOUTUBE TESTIMONIALS */}
         <div className="video-testimonials-grid">
-          {VIDEO_TESTIMONIALS.map((video, index) => (
+          {VIDEO_TESTIMONIALS.map((testimonial, index) => (
             <div className="video-block" key={index}>
-              <div className="video-card">
-                <iframe
-                  src={"https://www.youtube.com/embed/" + video.embedId}
-                  title={video.name}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="video-frame"
-                ></iframe>
-              </div>
+              <DynamicYouTubeCard 
+                 videoId={testimonial.videoId} 
+                 type="portrait" 
+                 showViews={false} 
+                 showTitle={false}
+              />
               <div className="video-info">
-                <div className="v-name">{video.name}</div>
-                <div className="v-role">{video.role}</div>
+                <div className="v-name">{testimonial.name}</div>
+                <div className="v-role">{testimonial.role}</div>
               </div>
             </div>
           ))}
@@ -900,6 +911,265 @@ export default function App() {
           </div>
         </div>
       </section>
+    </>
+  );
+}
+
+function Header({ onNavigate, theme, toggleTheme }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  return (
+    <nav className="nav-container">
+      <div className="nav-wrapper">
+        <div className="nav-left" onClick={() => onNavigate("hero")}>
+          <span className="brand-name">VisWave <span>Media</span></span>
+        </div>
+
+        <div className="nav-center desktop-only">
+          <button onClick={() => onNavigate("about")}>About</button>
+          <button onClick={() => onNavigate("services")}>Services</button>
+          <button onClick={() => onNavigate("work")}>Work</button>
+          <button onClick={() => onNavigate("process")}>Process</button>
+          <button onClick={() => onNavigate("pricing")}>Pricing</button>
+          <button onClick={() => onNavigate("reviews")}>Reviews</button>
+          <button onClick={() => onNavigate("faq")}>FAQ</button>
+        </div>
+
+        <div className="nav-right">
+          <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+            {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+          </button>
+          <button className="nav-cta desktop-only" onClick={() => onNavigate("contact")}>
+            Contact <div className="circle-arrow"><ArrowRight /></div>
+          </button>
+          <button className="mobile-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
+        </div>
+      </div>
+      
+      <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+          <button onClick={() => {onNavigate("about"); setIsMenuOpen(false)}}>About</button>
+          <button onClick={() => {onNavigate("services"); setIsMenuOpen(false)}}>Services</button>
+          <button onClick={() => {onNavigate("work"); setIsMenuOpen(false)}}>Work</button>
+          <button onClick={() => {onNavigate("process"); setIsMenuOpen(false)}}>Process</button>
+          <button onClick={() => {onNavigate("pricing"); setIsMenuOpen(false)}}>Pricing</button>
+          <button onClick={() => {onNavigate("reviews"); setIsMenuOpen(false)}}>Reviews</button>
+          <button onClick={() => {onNavigate("faq"); setIsMenuOpen(false)}}>FAQ</button>
+          <button onClick={() => {onNavigate("contact"); setIsMenuOpen(false)}}>Book a Call</button>
+      </div>
+    </nav>
+  );
+}
+
+function FAQItem({ question, answer, isOpen, onClick }) {
+  return (
+    <div className={`faq-item ${isOpen ? 'open' : ''}`} onClick={onClick}>
+      <div className="faq-question">
+        <span>{question}</span>
+        <div className={`chevron ${isOpen ? 'rotate' : ''}`}><ChevronDown /></div>
+      </div>
+      <div className="faq-answer">
+        <div className="answer-inner">{answer}</div>
+      </div>
+    </div>
+  );
+}
+
+function Footer({ onNavigate }) {
+  return (
+    <footer className="footer-section">
+      <div className="footer-container">
+        
+        <div className="footer-top">
+          <div className="footer-col brand-col">
+            <div className="footer-logo">VisWave <span>Media</span></div>
+            <p className="footer-tagline">
+              Helping youtubers stand out with pro edits, fast delivery and what not!
+            </p>
+          </div>
+
+          <div className="footer-col">
+            <h4>Company</h4>
+            <div className="footer-links">
+              <button onClick={() => onNavigate("hero")}>Home</button>
+              <button onClick={() => onNavigate("about")}>About</button>
+              <button onClick={() => onNavigate("services")}>Services</button>
+              <button onClick={() => onNavigate("work")}>Work</button>
+              <button onClick={() => onNavigate("process")}>Process</button>
+              <button onClick={() => onNavigate("reviews")}>Reviews</button>
+              <button onClick={() => onNavigate("faq")}>FAQ</button>
+            </div>
+          </div>
+
+          <div className="footer-col">
+            <h4>Legal Pages</h4>
+            <div className="footer-links">
+              <button>Privacy Policy</button>
+              <button>Terms of Services</button>
+              <button>Refund Policy</button>
+            </div>
+          </div>
+
+          <div className="footer-col">
+            <h4>Socials & Contact</h4>
+            <div className="footer-links">
+              <a href="#" className="social-link"><TwitterIcon /> Twitter</a>
+              <a href="https://www.linkedin.com/company/viswavemedia" className="social-link"><LinkedInIcon /> LinkedIn</a>
+              <a href="https://www.instagram.com/viswavemedia/" className="social-link"><InstagramIcon /> Instagram</a>
+            </div>
+            <div className="contact-details">
+              <div className="contact-item"><MailIcon /> <span>hello@viswavemedia.com</span></div>
+              <div className="contact-item"><PhoneIcon /> <span>+91 8280669173</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <span>Copyright © 2026 to <a href="https://www.instagram.com/viswavemedia/">VisWave Media</a></span>
+          <span>Made with ❤️ by <a href="https://aakaario.com">Aakaar.io</a></span>
+        </div>
+
+        <div className="footer-particles">
+           <div className="fp d1" />
+           <div className="fp d2" />
+           <div className="fp d3" />
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function BackToTop() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.scrollY > 300) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener("scroll", toggleVisibility);
+    return () => window.removeEventListener("scroll", toggleVisibility);
+  }, []);
+
+  return (
+    <button 
+      className={`back-to-top ${isVisible ? 'visible' : ''}`} 
+      onClick={() => slowScrollTo(0)}
+      aria-label="Back to top"
+    >
+      <ArrowUp />
+    </button>
+  );
+}
+
+function MadeInBadge() {
+  return (
+    <a 
+      href="https://aakaario.com" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      className="made-in-badge"
+    >
+      <div className="badge-logo">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L2 19h20L12 2zm0 3.8L18.5 17h-13L12 5.8z" />
+        </svg>
+      </div>
+      <span className="badge-text">Made in Aakaar.io</span>
+    </a>
+  );
+}
+
+// ──────────────────────────────────────────
+// 7. MAIN APP COMPONENT (ROUTER)
+// ──────────────────────────────────────────
+export default function App() {
+  const [theme, setTheme] = useState("dark");
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  
+  // Custom lightweight router state
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
+  useEffect(() => { 
+    document.body.className = theme; 
+  }, [theme]);
+
+  // Listen for browser back/forward buttons
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener("popstate", handleLocationChange);
+    return () => window.removeEventListener("popstate", handleLocationChange);
+  }, []);
+
+  const navigateToPage = (path) => {
+    window.scrollTo(0, 0);
+    window.history.pushState({}, "", path);
+    setCurrentPath(path);
+  };
+
+  const handleNavigate = (id) => {
+    // 1. If clicking 'work', route to /our-work
+    if (id === 'work') {
+      navigateToPage('/our-work');
+      return;
+    }
+
+    // 2. If clicking anything else while ON the work page, go back to '/' first
+    if (currentPath !== '/') {
+      navigateToPage('/');
+      
+      // Wait a fraction of a second for the home page to mount, then scroll to section
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          const yOffset = -100;
+          const targetY = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          slowScrollTo(targetY);
+        }
+      }, 100);
+      return;
+    }
+
+    // 3. Normal scroll behavior if already on '/'
+    const element = document.getElementById(id);
+    if (element) {
+      const yOffset = -100; 
+      const targetY = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      slowScrollTo(targetY);
+    }
+  };
+
+  const toggleFaq = (index) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
+
+  return (
+    <div className="app-shell">
+      <GlobalStyles />
+      <Header onNavigate={handleNavigate} theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+      
+      {/* RENDER VIEW WITH SMOOTH ANIMATION */}
+      <div className="page-transition" key={currentPath}>
+        {currentPath === '/our-work' ? (
+          <WorkPage 
+             openFaqIndex={openFaqIndex} 
+             toggleFaq={toggleFaq} 
+          />
+        ) : (
+          <HomePage 
+             handleNavigate={handleNavigate} 
+             openFaqIndex={openFaqIndex} 
+             toggleFaq={toggleFaq} 
+          />
+        )}
+      </div>
       
       <BackToTop />
       <Footer onNavigate={handleNavigate} />
@@ -942,6 +1212,15 @@ function GlobalStyles() {
         background-size: 10px 10px; 
         background-attachment: fixed;
         min-height: 100vh;
+      }
+
+      /* SMOOTH PAGE TRANSITIONS */
+      .page-transition {
+        animation: smoothFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      @keyframes smoothFade {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       /* Navbar */
@@ -1074,6 +1353,70 @@ function GlobalStyles() {
       .service-tag { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 14px; border-radius: 50px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
       .tag-dot { color: var(--accent); font-size: 10px; }
 
+      /* Portfolio / Work Section */
+      .page-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+      .work-section { padding: 60px 24px 60px; background: transparent; position: relative; }
+      .work-section.page-mode { padding-top: 140px; flex-grow: 1; }
+      .work-container { max-width: 1200px; margin: 0 auto; }
+      .shorts-container { margin-top: 100px; }
+      .section-header-left { margin-bottom: 40px; border-left: 4px solid var(--accent); padding-left: 20px; }
+      .work-title { font-size: clamp(32px, 5vw, 56px); font-weight: 800; text-transform: uppercase; letter-spacing: -1px; line-height: 1; margin-bottom: 10px; }
+      .work-subtitle { font-size: 14px; font-weight: 700; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; }
+      
+      /* Grid Layouts for Portfolio */
+      .feat-video-wrapper { width: 100%; aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; margin-bottom: 30px; box-shadow: var(--shadow); }
+      .standard-video-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+      .shorts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+      @media(min-width: 1024px) { .shorts-grid { grid-template-columns: repeat(6, 1fr); } }
+
+      /* Dynamic YouTube Card Styles */
+      .portfolio-card { position: relative; background: #000; overflow: hidden; cursor: pointer; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease, border-color 0.3s ease; width: 100%; }
+      .portfolio-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+      .portfolio-card.landscape { aspect-ratio: 16 / 9; }
+      .portfolio-card.featured { width: 100%; height: 100%; border-radius: 0; border: none; }
+      .portfolio-card.featured:hover { transform: none; }
+      .portfolio-card.portrait { aspect-ratio: 9 / 16; }
+      
+      .p-thumb { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s; opacity: 0.8; }
+      .portfolio-card:hover .p-thumb { opacity: 0.4; }
+      
+      .play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none; }
+      .play-btn-circle { width: 60px; height: 60px; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+      .portfolio-card:hover .play-btn-circle { transform: scale(1.2); background: var(--accent); }
+      
+      .p-title-overlay { 
+         position: absolute; bottom: 0; left: 0; right: 0; 
+         padding: 50px 20px 20px;
+         background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+         color: white; font-weight: 700; font-size: 16px; 
+         z-index: 2; pointer-events: none;
+         display: -webkit-box;
+         -webkit-line-clamp: 2;
+         -webkit-box-orient: vertical;
+         overflow: hidden;
+         text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      }
+      
+      .views-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(5px);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 700;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid rgba(255,255,255,0.1);
+      }
+
+      .p-iframe { width: 100%; height: 100%; border: none; }
+
       /* Process Section */
       .process-section { padding: 60px 24px 60px; display: flex; flex-direction: column; align-items: center; max-width: 1200px; margin: 0 auto; }
       .process-pill { background: var(--card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 20px; box-shadow: var(--shadow); }
@@ -1204,9 +1547,6 @@ function GlobalStyles() {
       @keyframes scrollReviews { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
       .video-testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; width: 100%; max-width: 1100px; padding: 0 24px; justify-items: center; }
       .video-block { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; width: 100%; max-width: 320px; }
-      .video-card { background: #000; border-radius: 20px; overflow: hidden; aspect-ratio: 9 / 16; width: 100%; box-shadow: var(--shadow); border: 1px solid var(--border); transition: transform 0.3s ease; }
-      .video-card:hover { transform: translateY(-5px); }
-      .video-frame { width: 100%; height: 100%; border: none; }
       .v-name { font-weight: 700; font-size: 16px; color: var(--text); }
       .v-role { font-size: 13px; color: var(--text-light); margin-top: 4px; }
 
@@ -1297,6 +1637,12 @@ function GlobalStyles() {
         .mobile-toggle { display: block; }
         .main-title { font-size: 52px; }
         .hero-section { padding-top: 100px; }
+        
+        .standard-video-row { grid-template-columns: 1fr; }
+        .shorts-grid { grid-template-columns: repeat(2, 1fr); }
+        .work-title { font-size: 32px; }
+        .work-section.page-mode { padding-top: 100px; }
+        
         .stats-container { flex-direction: column; gap: 30px; padding: 30px; width: 100%; }
         .stat-divider { width: 50px; height: 1px; }
         .services-grid { grid-template-columns: 1fr; }
