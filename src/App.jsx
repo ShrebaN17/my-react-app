@@ -450,8 +450,8 @@ function WorkPage({ openFaqIndex, toggleFaq }) {
       <section className="work-section page-mode" id="work">
         <div className="work-container">
           <div className="section-header-left">
-             <h2 className="work-title">My Work</h2>
-             <p className="work-subtitle">YOU FILM IT. I SHAPE IT. TOGETHER WE BUILD SOMETHING PEOPLE WANT TO WATCH.</p>
+             <h2 className="work-title">Our Work</h2>
+             <p className="work-subtitle">YOU FILM IT. WE SHAPE IT. TOGETHER WE BUILD SOMETHING PEOPLE WANT TO WATCH.</p>
           </div>
 
           <div className="highlights-grid">
