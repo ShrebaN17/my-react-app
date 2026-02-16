@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ──────────────────────────────────────────
 // 1. DATA, ASSETS & CONFIG
@@ -418,33 +423,52 @@ function DynamicYouTubeCard({ videoId, type = "landscape", showViews = false, sh
 }
 
 function WorkPage({ openFaqIndex, toggleFaq }) {
+  const [dbVideos, setDbVideos] = useState({ featured: null, longForm: [], shorts: [] });
+
+  useEffect(() => {
+    async function loadPortfolio() {
+      const { data } = await supabase.from('portfolio_videos').select('*').order('created_at', { ascending: false });
+      if (data && data.length > 0) {
+        setDbVideos({
+          // Grab the most recently added featured video
+          featured: data.find(v => v.category === 'featured'),
+          longForm: data.filter(v => v.category === 'longForm'),
+          shorts: data.filter(v => v.category === 'shorts')
+        });
+      }
+    }
+    loadPortfolio();
+  }, []);
+
+  // Use the database videos, but fall back to the local hardcoded ones if the DB is empty
+  const activeFeatured = dbVideos.featured || PORTFOLIO_DATA.featured;
+  const activeLongForm = dbVideos.longForm.length > 0 ? dbVideos.longForm : PORTFOLIO_DATA.longForm;
+  const activeShorts = dbVideos.shorts.length > 0 ? dbVideos.shorts : PORTFOLIO_DATA.shorts;
+
   return (
     <div className="page-wrapper">
       <section className="work-section page-mode" id="work">
-        {/* PART 1: LONG FORM / HIGHLIGHTS */}
         <div className="work-container">
           <div className="section-header-left">
-             <h2 className="work-title">Our Work</h2>
-             <p className="work-subtitle">YOU FILM IT. WE SHAPE IT. TOGETHER WE BUILD SOMETHING PEOPLE WANT TO WATCH.</p>
+             <h2 className="work-title">My Work</h2>
+             <p className="work-subtitle">YOU FILM IT. I SHAPE IT. TOGETHER WE BUILD SOMETHING PEOPLE WANT TO WATCH.</p>
           </div>
 
           <div className="highlights-grid">
-             {/* Big Featured Video */}
              <div className="feat-video-wrapper">
                 <DynamicYouTubeCard 
-                   videoId={PORTFOLIO_DATA.featured.videoId} 
+                   videoId={activeFeatured.video_id || activeFeatured.videoId} 
                    type="featured"
                    showViews={true}
                    showTitle={false}
                 />
              </div>
              
-             {/* Row of 3 smaller videos */}
              <div className="standard-video-row">
-                {PORTFOLIO_DATA.longForm.map((vid) => (
+                {activeLongForm.map((vid, index) => (
                    <DynamicYouTubeCard 
-                     key={vid.id} 
-                     videoId={vid.videoId} 
+                     key={vid.id || index} 
+                     videoId={vid.video_id || vid.videoId} 
                      type="landscape" 
                      showViews={true}
                      showTitle={false} 
@@ -454,7 +478,6 @@ function WorkPage({ openFaqIndex, toggleFaq }) {
           </div>
         </div>
 
-        {/* PART 2: SHORT FORM */}
         <div className="work-container shorts-container">
            <div className="section-header-left">
              <h2 className="work-title">Short Form Content</h2>
@@ -462,10 +485,10 @@ function WorkPage({ openFaqIndex, toggleFaq }) {
           </div>
           
           <div className="shorts-grid">
-             {PORTFOLIO_DATA.shorts.map((vid) => (
+             {activeShorts.map((vid, index) => (
                  <DynamicYouTubeCard 
-                   key={vid.id} 
-                   videoId={vid.videoId} 
+                   key={vid.id || index} 
+                   videoId={vid.video_id || vid.videoId} 
                    type="portrait" 
                    showViews={false}
                    showTitle={false} 
@@ -1085,6 +1108,109 @@ function MadeInBadge() {
   );
 }
 
+function AdminPage() {
+  const [session, setSession] = useState(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [videoId, setVideoId] = useState('');
+  const [category, setCategory] = useState('longForm');
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) fetchVideos();
+    });
+    supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+  }, []);
+
+  const fetchVideos = async () => {
+    const { data } = await supabase.from('portfolio_videos').select('*').order('created_at', { ascending: false });
+    if (data) setVideos(data);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+  };
+
+  const handleAddVideo = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    // Extract ID if user pastes full URL
+    let finalId = videoId;
+    if (videoId.includes('v=')) finalId = videoId.split('v=')[1].split('&')[0];
+    else if (videoId.includes('youtu.be/')) finalId = videoId.split('youtu.be/')[1].split('?')[0];
+
+    await supabase.from('portfolio_videos').insert([{ video_id: finalId, category }]);
+    setVideoId('');
+    fetchVideos();
+    setLoading(false);
+  };
+
+  const handleDelete = async (id) => {
+    await supabase.from('portfolio_videos').delete().match({ id });
+    fetchVideos();
+  };
+
+  if (!session) {
+    return (
+      <div className="page-wrapper" style={{ justifyContent: 'center', alignItems: 'center', paddingTop: 120 }}>
+        <div className="pricing-card dark" style={{ width: 400, maxWidth: '90%' }}>
+          <h2 style={{ marginBottom: 20 }}>Admin Login</h2>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+            <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={{ padding: 12, borderRadius: 8, background: '#222', border: '1px solid #333', color: '#fff' }} />
+            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} style={{ padding: 12, borderRadius: 8, background: '#222', border: '1px solid #333', color: '#fff' }} />
+            <button type="submit" className="plan-btn orange" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-wrapper" style={{ paddingTop: 120, paddingBottom: 60, paddingLeft: 24, paddingRight: 24 }}>
+      <div className="work-container" style={{ maxWidth: 800 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
+           <h2 className="work-title">Portfolio Manager</h2>
+           <button onClick={() => supabase.auth.signOut()} style={{ padding: '8px 16px', background: 'transparent', border: '1px solid #555', color: '#fff', borderRadius: 8, cursor: 'pointer' }}>Sign Out</button>
+        </div>
+
+        <div className="pricing-card dark" style={{ marginBottom: 40 }}>
+          <h3>Add New Video</h3>
+          <form onSubmit={handleAddVideo} style={{ display: 'flex', gap: 15, marginTop: 20, flexWrap: 'wrap' }}>
+            <input type="text" placeholder="YouTube URL or Video ID" value={videoId} onChange={e => setVideoId(e.target.value)} required style={{ flex: 1, minWidth: 200, padding: 12, borderRadius: 8, background: '#222', border: '1px solid #333', color: '#fff' }} />
+            <select value={category} onChange={e => setCategory(e.target.value)} style={{ padding: 12, borderRadius: 8, background: '#222', border: '1px solid #333', color: '#fff' }}>
+              <option value="featured">Featured (Big Top Video)</option>
+              <option value="longForm">Long Form (Landscape)</option>
+              <option value="shorts">Short Form (Portrait)</option>
+            </select>
+            <button type="submit" className="plan-btn orange" style={{ width: 'auto', margin: 0 }} disabled={loading}>+ Add</button>
+          </form>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+          {videos.map(v => (
+            <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 20, background: '#111', border: '1px solid #333', borderRadius: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
+                <img src={`https://i.ytimg.com/vi/${v.video_id}/mqdefault.jpg`} style={{ width: 80, height: 45, objectFit: 'cover', borderRadius: 6 }} alt="thumb" />
+                <div>
+                  <div style={{ fontWeight: 'bold' }}>{v.video_id}</div>
+                  <div style={{ fontSize: 12, color: '#888', textTransform: 'uppercase' }}>{v.category}</div>
+                </div>
+              </div>
+              <button onClick={() => handleDelete(v.id)} style={{ padding: '8px 16px', background: 'rgba(255, 77, 77, 0.15)', color: '#ff4d4d', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 'bold' }}>Delete</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ──────────────────────────────────────────
 // 7. MAIN APP COMPONENT (ROUTER)
 // ──────────────────────────────────────────
@@ -1155,9 +1281,11 @@ export default function App() {
       <GlobalStyles />
       <Header onNavigate={handleNavigate} theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
       
-      {/* RENDER VIEW WITH SMOOTH ANIMATION */}
+{/* RENDER VIEW WITH SMOOTH ANIMATION */}
       <div className="page-transition" key={currentPath}>
-        {currentPath === '/our-work' ? (
+        {currentPath === '/admin' ? (
+          <AdminPage />
+        ) : currentPath === '/our-work' ? (
           <WorkPage 
              openFaqIndex={openFaqIndex} 
              toggleFaq={toggleFaq} 
