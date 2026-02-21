@@ -10,7 +10,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // ──────────────────────────────────────────
 
 // 🔥 IMPORTANT: Paste your YouTube Data API v3 Key here to fetch actual views, titles, and high-res thumbnails!
-// Get one for free at: https://console.cloud.google.com/
 const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY; 
 
 const TRUSTED_AVATARS = [
@@ -21,42 +20,34 @@ const TRUSTED_AVATARS = [
 
 const REVIEWS_DATA = [
   { 
-    name: "Alex Rivera", 
-    role: "YouTuber, 1.5M Subs", 
+    name: "Alex Rivera", role: "YouTuber, 1.5M Subs", 
     text: "The retention on my shorts went up by 40% after working with VisWave Media. Insane results.",
     img: "https://randomuser.me/api/portraits/men/46.jpg"
   },
   { 
-    name: "Sarah Chen", 
-    role: "Course Creator", 
+    name: "Sarah Chen", role: "Course Creator", 
     text: "I used to spend 10 hours editing. Now I just record and upload. Game changer.",
     img: "https://randomuser.me/api/portraits/women/65.jpg"
   },
   { 
-    name: "Mark Davis", 
-    role: "Tech Reviewer", 
+    name: "Mark Davis", role: "Tech Reviewer", 
     text: "Quality is unmatched. They actually understand pacing and storytelling.",
     img: "https://randomuser.me/api/portraits/men/22.jpg"
   },
   { 
-    name: "Jessica L.", 
-    role: "Lifestyle Vlogger", 
+    name: "Jessica L.", role: "Lifestyle Vlogger", 
     text: "Thumbnails are click magnets. My CTR doubled in the first week.",
     img: "https://randomuser.me/api/portraits/women/28.jpg"
   },
   { 
-    name: "Ryan K.", 
-    role: "Streamer", 
+    name: "Ryan K.", role: "Streamer", 
     text: "Fastest delivery I've seen. The team is super responsive and gets the vibe right.",
     img: "https://randomuser.me/api/portraits/men/18.jpg"
   }
 ];
 
 const PORTFOLIO_DATA = {
-  featured: {
-    id: "feat1",
-    videoId: "p4g5OL8g1M0"
-  },
+  featured: { id: "feat1", videoId: "p4g5OL8g1M0" },
   longForm: [
     { id: "lf1", videoId: "qMV6c1LLuXA" },
     { id: "lf2", videoId: "57Y6xK0AXII" },
@@ -92,12 +83,14 @@ const CrossIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="no
 const CheckIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" style={{color: '#fff'}}><polyline points="20 6 9 17 4 12"></polyline></svg>;
 const StarBullet = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{color: '#ff5c00'}}><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>;
 const TwitterIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>;
-const InstagramIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
+const InstagramIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>;
 const LinkedInIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>;
 const MailIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>;
 const PhoneIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>;
 const PlayIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>;
 const EyeIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
+const YouTubeLogo = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21.582,6.186c-0.23-0.86-0.908-1.538-1.768-1.768C18.254,4,12,4,12,4S5.746,4,4.186,4.418c-0.86,0.23-1.538,0.908-1.768,1.768C2,7.746,2,12,2,12s0,4.254,0.418,5.814c0.23,0.86,0.908,1.538,1.768,1.768C5.746,20,12,20,12,20s6.254,0,7.814-0.418c0.86-0.23,1.538-0.908,1.768-1.768C22,16.254,22,12,22,12S22,7.746,21.582,6.186z M10,15.464V8.536L16,12L10,15.464z"/></svg>;
+const TikTokLogo = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>;
 
 // ──────────────────────────────────────────
 // 3. BUTTERY SMOOTH SCROLL HELPER
@@ -127,6 +120,39 @@ const slowScrollTo = (targetY, duration = 1200) => {
 // ──────────────────────────────────────────
 // 4. ANIMATION & UTILITY HELPERS
 // ──────────────────────────────────────────
+function CustomCursor() {
+  const cursorRef = useRef(null);
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${e.clientX - 6}px, ${e.clientY - 6}px, 0)`;
+      }
+    };
+
+    const handleMouseOver = (e) => {
+      if (cursorRef.current) {
+        const isClickable = e.target.closest('a, button, .portfolio-card, .trust-pill, .is-row, .faq-item');
+        if (isClickable) {
+          cursorRef.current.classList.add('hovered');
+        } else {
+          cursorRef.current.classList.remove('hovered');
+        }
+      }
+    };
+
+    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mouseover', handleMouseOver);
+
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+      window.removeEventListener('mouseover', handleMouseOver);
+    };
+  }, []);
+
+  return <div className="custom-cursor" ref={cursorRef} />;
+}
+
 function AnimatedNumber({ value, duration = 2000 }) {
   const [count, setCount] = useState(0);
   const countRef = useRef(null);
@@ -234,26 +260,103 @@ function UploadVisual() {
 // ──────────────────────────────────────────
 // 5. CONTENT CONSTANTS
 // ──────────────────────────────────────────
+
 const SERVICES_DATA = [
   {
     title: "YouTube Shorts Editing",
     desc: "We turn raw clips into high-retention, caption-packed vertical videos that pop on Reels, Shorts, and TikTok. Great for content repurposing and explosive growth.",
-    tags: ["Snappy Pacing", "Viral-Ready", "Subtitled"]
+    tags: ["Snappy Pacing", "Viral-Ready", "Subtitled"],
+    visual: (
+      <div className="srv-visual">
+         <div className="phone-mockup">
+            <div className="shorts-scroll-track">
+               <div className="short-item s-item-1">
+                  <div className="s-play-center"><PlayIcon /></div>
+                  <div className="s-ui">
+                     <div className="s-avatar"></div>
+                     <div className="s-line"></div>
+                     <div className="s-line short"></div>
+                  </div>
+               </div>
+               <div className="short-item s-item-2">
+                  <div className="s-play-center"><PlayIcon /></div>
+                  <div className="s-ui">
+                     <div className="s-avatar"></div>
+                     <div className="s-line"></div>
+                     <div className="s-line short"></div>
+                  </div>
+               </div>
+               <div className="short-item s-item-3">
+                  <div className="s-play-center"><PlayIcon /></div>
+                  <div className="s-ui">
+                     <div className="s-avatar"></div>
+                     <div className="s-line"></div>
+                     <div className="s-line short"></div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+    )
   },
   {
     title: "Long Form Edits",
     desc: "From vlogs to deep dives, we trim the fluff, tighten the pacing, and ensure your storytelling keeps viewers engaged from start to finish.",
-    tags: ["Retention-Driven"]
+    tags: ["Retention-Driven", "Storytelling"],
+    visual: (
+      <div className="srv-visual">
+         <div className="editor-window">
+            <div className="preview-pane">
+                <PlayIcon />
+            </div>
+            <div className="timeline-mini">
+               <div className="t-block" style={{width: '30%'}}/>
+               <div className="t-block" style={{width: '20%'}}/>
+               <div className="t-block highlight" style={{width: '40%'}}/>
+            </div>
+         </div>
+      </div>
+    )
   },
   {
     title: "Thumbnail Design",
     desc: "Stop the scroll with high-CTR thumbnails. We combine psychology and design to make sure your videos get the clicks they deserve.",
-    tags: ["Click Magnet"]
+    tags: ["Click Magnet", "Custom Art"],
+    visual: (
+      <div className="srv-visual">
+         <div className="thumb-card">
+            <div className="thumb-img">
+               <div className="ctr-badge">12% CTR <ArrowUp /></div>
+            </div>
+            <div className="thumb-title-line" />
+            <div className="thumb-desc-line" />
+         </div>
+      </div>
+    )
   },
   {
     title: "Content Repurposing",
     desc: "One video, 10 pieces of content — cut into Shorts, Reels, quote cards, and teasers. Perfect for creators who want to stay visible everywhere.",
-    tags: ["Multi-Platform", "Batch Delivery", "Quick"]
+    tags: ["Multi-Platform", "Batch Delivery"],
+    visual: (
+      <div className="srv-visual">
+         <div className="v-repurpose">
+             <svg className="branch-lines" preserveAspectRatio="none" viewBox="0 0 280 180">
+                <path d="M 80,90 C 140,90 160,32 236,32" />
+                <path d="M 80,90 L 236,90" />
+                <path d="M 80,90 C 140,90 160,148 236,148" />
+             </svg>
+             <div className="source-node">
+                <PlayIcon />
+             </div>
+             <div className="output-nodes">
+                <div className="out-node n-yt"><YouTubeLogo /></div>
+                <div className="out-node n-ig"><InstagramIcon /></div>
+                <div className="out-node n-tk"><TikTokLogo /></div>
+             </div>
+         </div>
+      </div>
+    )
   }
 ];
 
@@ -355,17 +458,72 @@ const FAQ_DATA = [
 // 6. SUB-COMPONENTS
 // ──────────────────────────────────────────
 
-// Smart YouTube Component: Fetches Data, Displays Custom UI, Loads Iframe on Click
+function InteractiveServices() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  return (
+    <div className="interactive-services-container">
+      <div className="is-left">
+        {SERVICES_DATA.map((srv, idx) => (
+          <div
+            key={idx}
+            className={`is-row ${activeIndex === idx ? 'active' : ''}`}
+            onMouseEnter={() => setActiveIndex(idx)}
+            onClick={() => setActiveIndex(idx)}
+          >
+            <div className="is-row-header">
+              <div className="is-num">0{idx + 1}</div>
+              <h3 className="is-title">{srv.title}</h3>
+            </div>
+            
+            <div className="is-mobile-content">
+               <p className="is-desc">{srv.desc}</p>
+               <div className="is-tags">
+                 {srv.tags.map((tag, i) => (
+                   <span key={i} className="service-tag">
+                     <span className="tag-dot">✦</span> {tag}
+                   </span>
+                 ))}
+               </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div className="is-right desktop-only">
+        <div className="is-visual-wrapper">
+           {SERVICES_DATA.map((srv, idx) => (
+             <div key={idx} className={`is-visual-content ${activeIndex === idx ? 'active' : ''}`}>
+                <div className="is-img-placeholder">
+                  {srv.visual} 
+                </div>
+                <div className="is-text-content">
+                  <p className="is-desc">{srv.desc}</p>
+                  <div className="is-tags">
+                     {srv.tags.map((tag, i) => (
+                       <span key={i} className="service-tag">
+                         <span className="tag-dot">✦</span> {tag}
+                       </span>
+                     ))}
+                  </div>
+                </div>
+             </div>
+           ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DynamicYouTubeCard({ videoId, type = "landscape", showViews = false, showTitle = false, customFallbackTitle }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoData, setVideoData] = useState({
-     title: customFallbackTitle || "", // Removed default text!
+     title: customFallbackTitle || "", 
      thumb: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
      views: null
   });
 
   useEffect(() => {
-    // Silently fall back to standard images if API Key is not set yet
     if (!YOUTUBE_API_KEY || YOUTUBE_API_KEY === "YOUR_API_KEY_HERE") return;
 
     fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoId}&key=${YOUTUBE_API_KEY}`)
@@ -375,7 +533,6 @@ function DynamicYouTubeCard({ videoId, type = "landscape", showViews = false, sh
           const info = data.items[0];
           setVideoData({
             title: info.snippet.title,
-            // Fallback chain for best available quality
             thumb: info.snippet.thumbnails?.maxres?.url || info.snippet.thumbnails?.high?.url || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
             views: info.statistics.viewCount
           });
@@ -404,7 +561,6 @@ function DynamicYouTubeCard({ videoId, type = "landscape", showViews = false, sh
             </div>
           </div>
           
-          {/* Title overlay is now completely hidden by default */}
           {showTitle && videoData.title && (
              <div className="p-title-overlay">{videoData.title}</div>
           )}
@@ -430,7 +586,6 @@ function WorkPage({ openFaqIndex, toggleFaq }) {
       const { data } = await supabase.from('portfolio_videos').select('*').order('created_at', { ascending: false });
       if (data && data.length > 0) {
         setDbVideos({
-          // Grab the most recently added featured video
           featured: data.find(v => v.category === 'featured'),
           longForm: data.filter(v => v.category === 'longForm'),
           shorts: data.filter(v => v.category === 'shorts')
@@ -440,7 +595,6 @@ function WorkPage({ openFaqIndex, toggleFaq }) {
     loadPortfolio();
   }, []);
 
-  // Use the database videos, but fall back to the local hardcoded ones if the DB is empty
   const activeFeatured = dbVideos.featured || PORTFOLIO_DATA.featured;
   const activeLongForm = dbVideos.longForm.length > 0 ? dbVideos.longForm : PORTFOLIO_DATA.longForm;
   const activeShorts = dbVideos.shorts.length > 0 ? dbVideos.shorts : PORTFOLIO_DATA.shorts;
@@ -498,7 +652,6 @@ function WorkPage({ openFaqIndex, toggleFaq }) {
         </div>
       </section>
 
-      {/* FAQ SECTION ADDED TO WORK PAGE */}
       <section className="faq-section" id="faq">
         <div className="faq-grid">
           <div className="faq-left">
@@ -525,7 +678,6 @@ function WorkPage({ openFaqIndex, toggleFaq }) {
         </div>
       </section>
       
-      {/* Call to action at the bottom of the work page */}
       <section className="cta-section">
         <div className="cta-card" style={{ maxWidth: 800, padding: '40px 20px' }}>
           <div className="cta-content">
@@ -546,7 +698,6 @@ function WorkPage({ openFaqIndex, toggleFaq }) {
 function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
   return (
     <>
-      {/* HERO SECTION */}
       <section className="hero-section" id="hero">
         <div className="hero-content">
           <div className="hero-text-area">
@@ -571,7 +722,6 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
           </div>
 
           <div className="hero-visual-area desktop-only">
-             {/* GLOW BACKGROUNDS */}
              <div className="hero-glow glow-1" />
              <div className="hero-glow glow-2" />
 
@@ -616,7 +766,6 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
         </div>
       </section>
 
-      {/* ABOUT SECTION */}
       <section className="about-section" id="about">
         <div className="about-pill">
           <span className="rotating-star">✦</span> About 
@@ -644,7 +793,6 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
         </div>
       </section>
 
-      {/* SERVICES SECTION */}
       <section className="services-section" id="services">
         <div className="services-pill">
           <span className="rotating-star">✦</span> Services
@@ -654,33 +802,11 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
           We craft scroll-stopping edits that keep your audience <br />
           hooked and your content looking top-tier.
         </p>
-        <div className="services-grid">
-          {SERVICES_DATA.map((service, index) => (
-            <div className="service-card" key={index}>
-              <div className="card-bg-anim">
-                <div className="anim-dot dot-1" />
-                <div className="anim-dot dot-2" />
-                <div className="anim-dot dot-3" />
-              </div>
-              <div className="card-content-z">
-                <div className="card-top">
-                  <h3>{service.title}</h3>
-                  <p>{service.desc}</p>
-                </div>
-                <div className="card-tags">
-                  {service.tags.map((tag, i) => (
-                    <span key={i} className="service-tag">
-                      <span className="tag-dot">✦</span> {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        
+        <InteractiveServices />
+        
       </section>
 
-      {/* PROCESS SECTION */}
       <section className="process-section" id="process">
         <div className="process-pill">
           <span className="rotating-star">✦</span> Process
@@ -709,7 +835,6 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
         </div>
       </section>
 
-      {/* OUR SOLUTION SECTION */}
       <section className="solution-section" id="solution">
         <div className="solution-pill">
           <span className="rotating-star">✦</span> Our Solution
@@ -746,7 +871,6 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
         </div>
       </section>
 
-      {/* PRICING SECTION */}
       <section className="pricing-section" id="pricing">
         <div className="pricing-pill">
           <span className="rotating-star">✦</span> Pricing
@@ -826,7 +950,6 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
         </div>
       </section>
 
-      {/* REVIEWS SECTION */}
       <section className="reviews-section" id="reviews">
         <div className="reviews-pill">
           <span className="rotating-star">✦</span> Reviews
@@ -855,7 +978,6 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
           </div>
         </div>
 
-        {/* DYNAMIC YOUTUBE TESTIMONIALS */}
         <div className="video-testimonials-grid">
           {VIDEO_TESTIMONIALS.map((testimonial, index) => (
             <div className="video-block" key={index}>
@@ -874,7 +996,6 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
         </div>
       </section>
 
-      {/* FAQ SECTION */}
       <section className="faq-section" id="faq">
         <div className="faq-grid">
           <div className="faq-left">
@@ -901,7 +1022,6 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
         </div>
       </section>
 
-      {/* FINAL CTA SECTION */}
       <section className="cta-section" id="contact">
         <div className="cta-card">
           <div className="cta-content">
@@ -1140,7 +1260,6 @@ function AdminPage() {
   const handleAddVideo = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Extract ID if user pastes full URL
     let finalId = videoId;
     if (videoId.includes('v=')) finalId = videoId.split('v=')[1].split('&')[0];
     else if (videoId.includes('youtu.be/')) finalId = videoId.split('youtu.be/')[1].split('?')[0];
@@ -1218,14 +1337,12 @@ export default function App() {
   const [theme, setTheme] = useState("dark");
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   
-  // Custom lightweight router state
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
   useEffect(() => { 
     document.body.className = theme; 
   }, [theme]);
 
-  // Listen for browser back/forward buttons
   useEffect(() => {
     const handleLocationChange = () => {
       setCurrentPath(window.location.pathname);
@@ -1241,21 +1358,19 @@ export default function App() {
   };
 
   const handleNavigate = (id) => {
-    // 1. If clicking 'work', route to /our-work
     if (id === 'work') {
       navigateToPage('/our-work');
       return;
     }
 
-    // 2. If clicking anything else while ON the work page, go back to '/' first
     if (currentPath !== '/') {
       navigateToPage('/');
       
-      // Wait a fraction of a second for the home page to mount, then scroll to section
       setTimeout(() => {
         const element = document.getElementById(id);
         if (element) {
-          const yOffset = -100;
+          // Fixes the scroll offset so marquee doesn't leak into the next section
+          const yOffset = -80; 
           const targetY = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
           slowScrollTo(targetY);
         }
@@ -1263,10 +1378,10 @@ export default function App() {
       return;
     }
 
-    // 3. Normal scroll behavior if already on '/'
     const element = document.getElementById(id);
     if (element) {
-      const yOffset = -100; 
+      // Fixes the scroll offset so marquee doesn't leak into the next section
+      const yOffset = -80; 
       const targetY = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
       slowScrollTo(targetY);
     }
@@ -1278,10 +1393,10 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <CustomCursor />
       <GlobalStyles />
       <Header onNavigate={handleNavigate} theme={theme} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
       
-{/* RENDER VIEW WITH SMOOTH ANIMATION */}
       <div className="page-transition" key={currentPath}>
         {currentPath === '/admin' ? (
           <AdminPage />
@@ -1331,7 +1446,7 @@ function GlobalStyles() {
 
       * { box-sizing: border-box; margin: 0; padding: 0; }
       
-      html { scroll-behavior: auto; }
+      html { scroll-behavior: auto; cursor: none; }
 
       body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
@@ -1340,6 +1455,30 @@ function GlobalStyles() {
         background-size: 10px 10px; 
         background-attachment: fixed;
         min-height: 100vh;
+      }
+
+      /* CUSTOM CURSOR */
+      .custom-cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 12px;
+        height: 12px;
+        background-color: var(--accent);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate3d(-100px, -100px, 0);
+        transition: transform 0.1s ease-out, width 0.3s ease, height 0.3s ease, margin 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+      }
+
+      .custom-cursor.hovered {
+        width: 40px;
+        height: 40px;
+        margin-top: -14px; 
+        margin-left: -14px; 
+        background-color: var(--accent);
+        border: none;
       }
 
       /* SMOOTH PAGE TRANSITIONS */
@@ -1352,22 +1491,22 @@ function GlobalStyles() {
       }
 
       /* Navbar */
-      .nav-container { position: fixed; top: 0; width: 100%; height: 80px; background: var(--header-bg); backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; border-bottom: 1px solid var(--grid); }
+      .nav-container { position: fixed; top: 0; width: 100%; height: 80px; background: var(--header-bg); backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; border-bottom: 1px solid var(--grid); cursor: none;}
       .nav-wrapper { width: 95%; max-width: 1400px; display: flex; justify-content: space-between; align-items: center; }
-      .nav-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+      .nav-left { display: flex; align-items: center; gap: 10px; cursor: none; }
       .brand-name { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
       .brand-name span { color: var(--accent); }
       .nav-center { display: flex; gap: 32px; }
-      .nav-center button { background: none; border: none; font-weight: 600; color: var(--text-light); cursor: pointer; font-size: 14px; transition: 0.2s; }
+      .nav-center button { background: none; border: none; font-weight: 600; color: var(--text-light); cursor: none; font-size: 14px; transition: 0.2s; }
       .nav-center button:hover { color: var(--accent); }
       .nav-right { display: flex; align-items: center; gap: 16px; }
-      .theme-toggle { background: none; border: none; color: var(--text); cursor: pointer; display: flex; padding: 8px; border-radius: 50%; transition: background 0.3s; }
+      .theme-toggle { background: none; border: none; color: var(--text); cursor: none; display: flex; padding: 8px; border-radius: 50%; transition: background 0.3s; }
       .theme-toggle:hover { background: var(--grid); }
-      .nav-cta { background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-weight: 700; border: 2px solid transparent; cursor: pointer; font-size: 14px; transition: all 0.3s ease; }
+      .nav-cta { background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 50px; display: flex; align-items: center; gap: 10px; font-weight: 700; border: 2px solid transparent; cursor: none; font-size: 14px; transition: all 0.3s ease; }
       .nav-cta:hover { background: var(--accent); color: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 92, 0, 0.3); }
       .circle-arrow { background: var(--bg); color: var(--text); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
       .nav-cta:hover .circle-arrow { background: #fff; color: var(--accent); }
-      .mobile-toggle { display: none; background: none; border: none; color: var(--text); cursor: pointer; }
+      .mobile-toggle { display: none; background: none; border: none; color: var(--text); cursor: none; }
       
       .mobile-menu { 
         position: fixed; top: 80px; left: 0; width: 100%; height: calc(100vh - 80px); background: var(--bg); padding: 40px 24px;
@@ -1375,11 +1514,11 @@ function GlobalStyles() {
         transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 999;
       }
       .mobile-menu.open { transform: translateX(0); }
-      .mobile-menu button { background: transparent; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 700; color: var(--text); text-align: left; padding: 10px 0; cursor: pointer; transition: all 0.2s; border-bottom: 1px solid var(--grid); }
+      .mobile-menu button { background: transparent; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 700; color: var(--text); text-align: left; padding: 10px 0; cursor: none; transition: all 0.2s; border-bottom: 1px solid var(--grid); }
       .mobile-menu button:hover { color: var(--accent); padding-left: 10px; }
       .mobile-menu button:last-child { border-bottom: none; }
 
-      .main-cta { background: var(--text); color: var(--bg); padding: 16px 32px; border-radius: 100px; font-size: 16px; font-weight: 700; border: 2px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+      .main-cta { background: var(--text); color: var(--bg); padding: 16px 32px; border-radius: 100px; font-size: 16px; font-weight: 700; border: 2px solid transparent; cursor: none; display: flex; align-items: center; gap: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
       .main-cta:hover { background: var(--bg); color: var(--text); border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
       .cta-circle { background: var(--bg); color: var(--text); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
       .main-cta:hover .cta-circle { background: var(--accent); color: #fff; }
@@ -1388,10 +1527,10 @@ function GlobalStyles() {
       .cta-circle.orange { background: var(--accent); color: #fff; }
 
       /* Hero Section */
-      .hero-section { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding-top: 80px; }
+      .hero-section { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding-top: 80px; overflow: hidden; }
       .hero-content { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr 400px; gap: 20px; padding: 0 24px; margin-bottom: 40px; align-items: center; }
       
-      .trust-pill { background: var(--card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; display: inline-flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; margin-bottom: 30px; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.2s ease; }
+      .trust-pill { background: var(--card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 50px; display: inline-flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; margin-bottom: 30px; box-shadow: var(--shadow); cursor: none; transition: transform 0.2s ease; }
       .trust-pill:hover { transform: scale(1.05); }
 
       .avatar-group { display: flex; }
@@ -1403,7 +1542,6 @@ function GlobalStyles() {
       .caption { font-size: 13px; color: var(--text-light); margin-top: 16px; font-weight: 500; }
       .hero-visual-area { position: relative; height: 400px; width: 400px; }
 
-      /* ORANGE GLOW EFFECT STYLES */
       .hero-glow {
         position: absolute;
         width: 300px;
@@ -1414,20 +1552,9 @@ function GlobalStyles() {
         z-index: 0;
         pointer-events: none;
       }
-      .glow-1 {
-        top: -50px;
-        right: -20px;
-        animation: pulseGlow 4s infinite alternate ease-in-out;
-      }
-      .glow-2 {
-        bottom: 50px;
-        left: 0px;
-        animation: pulseGlow 6s infinite alternate-reverse ease-in-out;
-      }
-      @keyframes pulseGlow {
-        0% { transform: scale(1); opacity: 0.5; }
-        100% { transform: scale(1.3); opacity: 0.8; }
-      }
+      .glow-1 { top: -50px; right: -20px; animation: pulseGlow 4s infinite alternate ease-in-out; }
+      .glow-2 { bottom: 50px; left: 0px; animation: pulseGlow 6s infinite alternate-reverse ease-in-out; }
+      @keyframes pulseGlow { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.3); opacity: 0.8; } }
 
       .floating-card { position: absolute; background: var(--card); padding: 24px; border-radius: 24px; width: 320px; border: 1px solid var(--border); box-shadow: var(--shadow); animation: floatAnim 6s infinite ease-in-out; z-index: 2; }
       .card-1 { top: 0px; right: 0px; transform: rotate(-3deg); z-index: 2; --r: -3deg; }
@@ -1436,7 +1563,7 @@ function GlobalStyles() {
       .card-user { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
       .user-img { width: 40px; height: 40px; border-radius: 50%; background: #eee; }
       .card-actions { display: flex; justify-content: space-between; margin-top: 16px; font-size: 13px; font-weight: 700; color: var(--text-light); align-items: center; }
-      .reply { color: var(--accent); cursor: pointer; }
+      .reply { color: var(--accent); cursor: none; }
       
       .marquee-bar { 
         position: absolute; bottom: 0; width: 100%; border-top: 1px solid var(--bg); padding: 12px 0; background: var(--bg); overflow: hidden; 
@@ -1459,27 +1586,120 @@ function GlobalStyles() {
       .stat-label { font-size: 14px; color: var(--text-light); font-weight: 600; }
       .stat-divider { width: 1px; height: 50px; background: var(--border); }
 
-      /* Services Section */
+      /* NEW Interactive Services Section */
       .services-section { padding: 60px 24px 60px; display: flex; flex-direction: column; align-items: center; max-width: 1200px; margin: 0 auto; }
       .services-pill { background: var(--card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 20px; box-shadow: var(--shadow); }
       .services-title { font-size: clamp(32px, 5vw, 42px); font-weight: 800; margin-bottom: 15px; }
-      .services-subtitle { color: var(--text-light); text-align: center; line-height: 1.5; margin-bottom: 60px; }
-      .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; width: 100%; }
-      .service-card { background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 32px; padding: 40px; display: flex; flex-direction: column; justify-content: space-between; min-height: 320px; position: relative; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease; }
-      body.light .service-card { background: #1a1a1a; }
-      .service-card:hover { transform: translateY(-5px); border-color: var(--accent); }
-      .service-card h3 { color: #fff; font-size: 24px; font-weight: 700; margin-bottom: 15px; }
-      .service-card p { color: rgba(255,255,255,0.7); line-height: 1.6; font-size: 15px; }
-      .card-content-z { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
-      .card-bg-anim { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; pointer-events: none; }
-      .anim-dot { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%); opacity: 0.5; filter: blur(5px); animation: drift 10s infinite alternate ease-in-out; }
-      .dot-1 { top: 10%; right: 10%; width: 60px; height: 60px; animation-duration: 12s; }
-      .dot-2 { bottom: 20%; left: 10%; width: 100px; height: 100px; animation-duration: 18s; animation-delay: -5s; opacity: 0.3; }
-      .dot-3 { top: 40%; left: 50%; width: 40px; height: 40px; animation-duration: 15s; animation-delay: -2s; opacity: 0.4; }
-      @keyframes drift { 0% { transform: translate(0, 0); } 100% { transform: translate(20px, -20px); } }
-      .card-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
-      .service-tag { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 14px; border-radius: 50px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-      .tag-dot { color: var(--accent); font-size: 10px; }
+      .services-subtitle { color: var(--text-light); text-align: center; line-height: 1.5; margin-bottom: 20px; }
+      
+      .interactive-services-container { display: flex; gap: 60px; width: 100%; align-items: center; margin-top: 40px; }
+      .is-left { flex: 1; display: flex; flex-direction: column; }
+      
+      .is-row { padding: 30px 0; border-bottom: 1px solid var(--border); cursor: none; opacity: 0.5; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+      .is-row:first-child { border-top: 1px solid var(--border); }
+      .is-row.active, .is-row:hover { opacity: 1; transform: translateX(15px); }
+      .is-row.active .is-title, .is-row:hover .is-title { color: var(--accent); }
+      
+      .is-row-header { display: flex; align-items: center; gap: 20px; }
+      .is-mobile-content { display: none; }
+
+      .is-num { font-size: 16px; font-weight: 700; color: var(--text-light); }
+      .is-title { font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -1px; transition: color 0.3s ease; margin: 0; }
+      
+      .is-right { flex: 1.2; position: relative; height: 450px; }
+      .is-visual-wrapper { position: relative; width: 100%; height: 100%; border-radius: 32px; overflow: hidden; background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow); }
+      
+      .is-visual-content { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; transform: translateY(20px) scale(0.98); }
+      .is-visual-content.active { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+      
+      .is-img-placeholder { position: absolute; inset: 0; background: #000; z-index: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+      body.light .is-img-placeholder { background: #f8f8f8; }
+
+      /* ----- CUSTOM CSS VISUALS FOR SERVICES (Centered with original sizes) ----- */
+      .srv-visual { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; margin: 0 auto; }
+      
+      /* Shorts Feed Scroll */
+      .phone-mockup { width: 120px; height: 240px; border: 4px solid #222; border-radius: 20px; background: #000; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+      .shorts-scroll-track { display: flex; flex-direction: column; width: 100%; animation: scrollShorts 8s infinite cubic-bezier(0.77, 0, 0.17, 1); }
+      .short-item { width: 100%; height: 228px; flex-shrink: 0; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; border-bottom: 2px solid #111; }
+      .s-item-1 { background: linear-gradient(135deg, #1a1a1a, #333); }
+      .s-item-2 { background: linear-gradient(135deg, var(--accent), #ff8c00); }
+      .s-item-3 { background: linear-gradient(135deg, #0d324d, #7f5a83); }
+      
+      .s-play-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.8); }
+      .s-play-center svg { width: 24px; height: 24px; }
+      .s-ui { display: flex; flex-direction: column; gap: 6px; z-index: 2; }
+      .s-avatar { width: 24px; height: 24px; background: rgba(255,255,255,0.5); border-radius: 50%; }
+      .s-line { width: 80%; height: 6px; background: rgba(255,255,255,0.4); border-radius: 4px; }
+      .s-line.short { width: 50%; }
+      
+      @keyframes scrollShorts {
+        0%, 25% { transform: translateY(0); }
+        33%, 58% { transform: translateY(-228px); }
+        66%, 91% { transform: translateY(-456px); }
+        100% { transform: translateY(0); }
+      }
+
+      /* Long Form */
+      .editor-window { width: 220px; height: 160px; background: #222; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column; padding: 10px; gap: 10px; }
+      .preview-pane { flex: 1; background: #000; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent); }
+      .preview-pane svg { width: 24px; height: 24px; }
+      .timeline-mini { height: 30px; display: flex; gap: 5px; }
+      .t-block { height: 100%; background: rgba(255,255,255,0.1); border-radius: 4px; transition: background 0.3s; }
+      .t-block.highlight { background: var(--accent); animation: pulseBlock 2s infinite; }
+      @keyframes pulseBlock { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+      /* Thumbnail */
+      .thumb-card { width: 200px; display: flex; flex-direction: column; gap: 10px; }
+      .thumb-img { width: 100%; height: 110px; background: #222; border-radius: 12px; border: 1px solid #333; position: relative; display: flex; align-items: center; justify-content: center; }
+      .ctr-badge { background: #4fff88; color: #000; padding: 6px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 15px rgba(79, 255, 136, 0.3); animation: bounceBadge 2s infinite; }
+      .ctr-badge svg { width: 12px; height: 12px; }
+      .thumb-title-line { width: 80%; height: 12px; background: rgba(255,255,255,0.2); border-radius: 4px; }
+      .thumb-desc-line { width: 60%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 4px; }
+      @keyframes bounceBadge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px) scale(1.05); } }
+
+      /* Content Repurposing (Properly Centered) */
+      .v-repurpose { width: 280px; height: 180px; display: flex; align-items: center; justify-content: space-between; position: relative; margin: 0 auto; }
+      .branch-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+      .branch-lines path { fill: none; stroke: rgba(255,255,255,0.2); stroke-width: 2; stroke-dasharray: 6; animation: flowDash 20s linear infinite; }
+      body.light .branch-lines path { stroke: rgba(0,0,0,0.2); }
+      @keyframes flowDash { to { stroke-dashoffset: -400; } }
+
+      .source-node { width: 80px; height: 50px; background: #111; border: 2px solid #333; border-radius: 8px; z-index: 1; display: flex; align-items: center; justify-content: center; color: var(--text-light); position: relative; overflow: hidden; margin: 0; }
+      .source-node svg { width: 24px; height: 24px; }
+      .source-node::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); animation: shine 3s infinite; }
+      @keyframes shine { 100% { left: 200%; } }
+
+      .output-nodes { display: flex; flex-direction: column; justify-content: space-between; height: 100%; z-index: 1; padding: 10px 0; margin: 0; }
+      .out-node { width: 44px; height: 44px; background: #111; border: 2px solid #333; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; transition: all 0.3s; animation: floatNode 3s infinite ease-in-out; }
+      .out-node svg { width: 20px; height: 20px; }
+      .n-yt { color: #ff0000; border-color: rgba(255,0,0,0.3); }
+      .n-ig { color: #E1306C; border-color: rgba(225,48,108,0.3); animation-delay: -1s; }
+      .n-tk { color: #00f2fe; border-color: rgba(0,242,254,0.3); animation-delay: -2s; }
+      @keyframes floatNode { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+      /* Light mode tweaks for visuals */
+      body.light .phone-mockup { background: #fff; border-color: #e5e5e5; }
+      body.light .editor-window { background: #fff; border-color: #e5e5e5; }
+      body.light .preview-pane { background: #f5f5f5; }
+      body.light .t-block { background: rgba(0,0,0,0.05); }
+      body.light .thumb-img { background: #fff; border-color: #e5e5e5; }
+      body.light .thumb-title-line { background: rgba(0,0,0,0.2); }
+      body.light .thumb-desc-line { background: rgba(0,0,0,0.1); }
+      body.light .source-node { background: #fff; border-color: #ccc; }
+      body.light .out-node { background: #fff; }
+      /* ------------------------------------------- */
+
+      .is-text-content { position: relative; z-index: 1; padding: 40px; background: linear-gradient(to top, rgba(0,0,0,0.9) 20%, transparent); height: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
+      body.light .is-text-content { background: linear-gradient(to top, rgba(255,255,255,0.95) 20%, transparent); }
+      
+      .is-desc { font-size: 16px; color: rgba(255,255,255,0.9); line-height: 1.6; margin-bottom: 24px; font-weight: 500; }
+      body.light .is-desc { color: var(--text); }
+      
+      .is-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+      .service-tag { background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 16px; border-radius: 50px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+      body.light .service-tag { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color: var(--text); }
+      .tag-dot { color: var(--accent); font-size: 12px; }
 
       /* Portfolio / Work Section */
       .page-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
@@ -1498,7 +1718,7 @@ function GlobalStyles() {
       @media(min-width: 1024px) { .shorts-grid { grid-template-columns: repeat(6, 1fr); } }
 
       /* Dynamic YouTube Card Styles */
-      .portfolio-card { position: relative; background: #000; overflow: hidden; cursor: pointer; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease, border-color 0.3s ease; width: 100%; }
+      .portfolio-card { position: relative; background: #000; overflow: hidden; cursor: none; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease, border-color 0.3s ease; width: 100%; }
       .portfolio-card:hover { transform: translateY(-5px); border-color: var(--accent); }
       .portfolio-card.landscape { aspect-ratio: 16 / 9; }
       .portfolio-card.featured { width: 100%; height: 100%; border-radius: 0; border: none; }
@@ -1545,7 +1765,7 @@ function GlobalStyles() {
 
       .p-iframe { width: 100%; height: 100%; border: none; }
 
-      /* Process Section */
+      /* Process Section Original Sizing */
       .process-section { padding: 60px 24px 60px; display: flex; flex-direction: column; align-items: center; max-width: 1200px; margin: 0 auto; }
       .process-pill { background: var(--card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 20px; box-shadow: var(--shadow); }
       .process-title { font-size: clamp(32px, 5vw, 42px); font-weight: 800; margin-bottom: 15px; }
@@ -1591,7 +1811,7 @@ function GlobalStyles() {
 
       .v-grow .file-preview { background: #222; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; font-family: monospace; font-size: 10px; color: #888; position: absolute; top: 10px; transform: rotate(-3deg); }
       .upload-ui { width: 140px; height: 60px; position: absolute; bottom: 20px; display: flex; align-items: center; justify-content: center; }
-      .upload-btn { width: 100px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; position: relative; overflow: hidden; animation: btnState 5s infinite; }
+      .upload-btn { width: 100px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; position: relative; overflow: hidden; animation: btnState 5s infinite; cursor: none;}
       .txt-publish { position: absolute; animation: hideText 5s infinite; }
       .txt-publishing { position: absolute; display: flex; flex-direction: column; align-items: center; opacity: 0; gap: 2px; animation: showText 5s infinite; }
       .upload-progress { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(0,0,0,0.2); opacity: 0; animation: showBar 5s infinite; }
@@ -1642,7 +1862,7 @@ function GlobalStyles() {
       .dark .period { color: rgba(255,255,255,0.6); }
       .plan-desc { font-size: 14px; color: var(--text-light); margin-top: 15px; line-height: 1.5; }
       .dark .plan-desc { color: rgba(255,255,255,0.6); }
-      .plan-btn { width: 100%; padding: 14px; border-radius: 50px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: 0.2s; border: none; margin-bottom: 30px; }
+      .plan-btn { width: 100%; padding: 14px; border-radius: 50px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: none; transition: 0.2s; border: none; margin-bottom: 30px; }
       .pricing-card.light .plan-btn { background: #000; color: #fff; }
       body.dark .pricing-card.light .plan-btn { background: #fff; color: #000; }
       .pricing-card.dark .plan-btn { background: #fff; color: #000; }
@@ -1686,7 +1906,7 @@ function GlobalStyles() {
       .faq-title { font-size: clamp(32px, 4vw, 48px); font-weight: 800; margin-bottom: 20px; line-height: 1.1; }
       .faq-subtitle { font-size: 16px; color: var(--text-light); line-height: 1.6; max-width: 350px; }
       .faq-right { display: flex; flex-direction: column; gap: 15px; }
-      .faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow); overflow: hidden; }
+      .faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; cursor: none; transition: all 0.3s ease; box-shadow: var(--shadow); overflow: hidden; }
       .faq-item:hover { border-color: var(--accent); }
       .faq-item.open { border-color: var(--accent); background: #1a1a1a; }
       body.light .faq-item.open { background: #fff; }
@@ -1726,7 +1946,7 @@ function GlobalStyles() {
       .footer-logo span { color: var(--accent); }
       .footer-tagline { font-size: 14px; color: #888; line-height: 1.6; max-width: 250px; }
       .footer-links { display: flex; flex-direction: column; gap: 12px; }
-      .footer-links button, .social-link { background: none; border: none; color: #888; text-align: left; padding: 0; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+      .footer-links button, .social-link { background: none; border: none; color: #888; text-align: left; padding: 0; font-size: 14px; cursor: none; transition: 0.2s; display: flex; align-items: center; gap: 8px; text-decoration: none; }
       .footer-links button:hover, .social-link:hover { color: #fff; transform: translateX(3px); }
       .contact-details { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
       .contact-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #ccc; }
@@ -1740,7 +1960,7 @@ function GlobalStyles() {
       .back-to-top {
         position: fixed; bottom: 30px; right: 30px; background: var(--text); color: var(--bg);
         width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        cursor: pointer; border: 2px solid transparent; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        cursor: none; border: 2px solid transparent; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 1002;
       }
       .back-to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
@@ -1749,7 +1969,7 @@ function GlobalStyles() {
       .made-in-badge {
         position: fixed; bottom: 30px; right: 30px; background: var(--card); border: 1px solid var(--border);
         padding: 8px 16px; border-radius: 12px; display: flex; align-items: center; gap: 8px; text-decoration: none;
-        z-index: 1001; box-shadow: var(--shadow); transition: all 0.3s ease;
+        z-index: 1001; box-shadow: var(--shadow); transition: all 0.3s ease; cursor: none;
       }
       .back-to-top.visible ~ .made-in-badge { bottom: 95px; }
       .made-in-badge:hover { transform: translateY(-2px); border-color: var(--accent); }
@@ -1759,12 +1979,16 @@ function GlobalStyles() {
       .spacing-fix { margin-left: 6px; }
 
       @media (max-width: 960px) {
+        /* Re-enable default cursors on mobile and hide custom cursor */
+        html, button, a, .trust-pill, .portfolio-card, .is-row, .faq-item, .nav-container, .nav-left, .nav-center button, .nav-cta, .mobile-toggle, .mobile-menu button, .main-cta, .reply, .footer-links button, .social-link, .back-to-top, .made-in-badge { cursor: auto; }
+        .custom-cursor { display: none; }
+
         .hero-content { grid-template-columns: 1fr; text-align: center; }
         .hero-text-area { display: flex; flex-direction: column; align-items: center; }
         .desktop-only { display: none; }
         .mobile-toggle { display: block; }
         .main-title { font-size: 52px; }
-        .hero-section { padding-top: 100px; }
+        .hero-section { padding-top: 100px; overflow: hidden; } /* Prevents overflow bugs on mobile */
         
         .standard-video-row { grid-template-columns: 1fr; }
         .shorts-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1773,8 +1997,29 @@ function GlobalStyles() {
         
         .stats-container { flex-direction: column; gap: 30px; padding: 30px; width: 100%; }
         .stat-divider { width: 50px; height: 1px; }
-        .services-grid { grid-template-columns: 1fr; }
-        .service-card { padding: 30px; min-height: auto; }
+        
+        /* Mobile Accordion Overrides */
+        .interactive-services-container { flex-direction: column; gap: 0; margin-top: 20px; }
+        .is-right.desktop-only { display: none; } /* Hide the right box entirely */
+        
+        .is-row { opacity: 1; transform: none !important; padding: 24px 0; }
+        .is-row.active, .is-row:hover { transform: none !important; }
+        .is-row .is-title { font-size: 24px; }
+        
+        /* Accordion Animation */
+        .is-mobile-content { 
+          display: block; 
+          max-height: 0; 
+          overflow: hidden; 
+          opacity: 0;
+          transition: max-height 0.4s ease, margin-top 0.4s ease, opacity 0.4s ease;
+        }
+        .is-row.active .is-mobile-content {
+          max-height: 400px;
+          margin-top: 20px;
+          opacity: 1;
+        }
+        
         .process-grid { grid-template-columns: 1fr; }
         .comparison-container { grid-template-columns: 1fr; }
         .pricing-grid { grid-template-columns: 1fr; }
