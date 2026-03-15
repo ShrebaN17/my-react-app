@@ -64,9 +64,9 @@ const PORTFOLIO_DATA = {
 };
 
 const VIDEO_TESTIMONIALS = [
-  { id: "video1", videoId: "dQw4w9WgXcQ", name: "Alex Hormozi", role: "Entrepreneur & Investor" },
-  { id: "video2", videoId: "dQw4w9WgXcQ", name: "Ali Abdaal", role: "Productivity Expert" },
-  { id: "video3", videoId: "dQw4w9WgXcQ", name: "Iman Gadzhi", role: "Business Owner" }
+  { id: "video1", videoId: "qUyn5aoOpf8", name: "Alex Hormozi", role: "Entrepreneur & Investor" },
+  { id: "video2", videoId: "qUyn5aoOpf8", name: "Ali Abdaal", role: "Productivity Expert" },
+  { id: "video3", videoId: "qUyn5aoOpf8", name: "Iman Gadzhi", role: "Business Owner" }
 ];
 
 // ──────────────────────────────────────────
