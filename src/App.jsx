@@ -729,8 +729,8 @@ function HomePage({ handleNavigate, openFaqIndex, toggleFaq }) {
               <div className="card-user">
                 <div className="user-img" />
                 <div>
-                    <div style={{fontWeight: 700, fontSize: 14}}>@tomas</div>
-                    <div style={{fontSize: 12, opacity: 0.6}}>YouTuber, 1.2M Subs</div>
+                    <div style={{fontWeight: 700, fontSize: 14}}>@AyushGG</div>
+                    <div style={{fontSize: 12, opacity: 0.6}}>YouTuber, 10k Subs</div>
                 </div>
               </div>
               <p>Bestest Edit in 48 hours. 🔥</p>
